@@ -49,3 +49,24 @@ jobs:
       - name: Diagnostiquer via WP-CLI
         run: |
           sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh && rm -f ~/run.sh'
+
+      - name: Comparer l'ordre des produits selon le tri (depuis le runner, en HTTPS public)
+        run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"
+
+          echo "--- Tri par défaut ---"
+          curl -s -A "$UA" "https://latelierdebenji.fr/boutique/" -o /tmp/default.html -w "HTTP %{http_code}\n"
+          grep -o '<h2 class="woocommerce-loop-product__title">[^<]*' /tmp/default.html || true
+          grep -o 'class="woocommerce-ordering"[^>]*>' /tmp/default.html || true
+          grep -o '<option value="[^"]*" selected[^>]*>[^<]*' /tmp/default.html || true
+
+          echo "--- Tri prix croissant ---"
+          curl -s -A "$UA" "https://latelierdebenji.fr/boutique/?orderby=price" -o /tmp/asc.html -w "HTTP %{http_code}\n"
+          grep -o '<h2 class="woocommerce-loop-product__title">[^<]*' /tmp/asc.html || true
+
+          echo "--- Tri prix décroissant ---"
+          curl -s -A "$UA" "https://latelierdebenji.fr/boutique/?orderby=price-desc" -o /tmp/desc.html -w "HTTP %{http_code}\n"
+          grep -o '<h2 class="woocommerce-loop-product__title">[^<]*' /tmp/desc.html || true
+
+          echo "--- Formulaire de tri (HTML brut, premiers 2000 caractères après woocommerce-ordering) ---"
+          grep -o 'woocommerce-ordering.\{0,2000\}' /tmp/default.html | head -c 2000 || true
