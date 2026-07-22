@@ -1116,6 +1116,103 @@ body.woocommerce-account .col2-set {
 	}
 }
 
+/* Formulaires "pleine page" (modifier l'adresse, les infos du compte, mot de passe oublié) :
+   déjà dans la carte .woocommerce-MyAccount-content, donc pas de carte imbriquée. */
+.woocommerce-EditAccountForm,
+.woocommerce-address-fields,
+.woocommerce-ResetPassword {
+	max-width: 480px;
+}
+
+.woocommerce-EditAccountForm fieldset {
+	border: none;
+	padding: 0;
+	margin: 24px 0 0;
+}
+
+.woocommerce-EditAccountForm legend {
+	font-family: var(--font-heading);
+	font-size: 1.2rem;
+	margin-bottom: 12px;
+	padding: 0;
+}
+
+/* Badges de statut de commande */
+.woocommerce-orders-table__cell-order-status mark,
+.order-status {
+	display: inline-block;
+	padding: 6px 14px;
+	border-radius: 999px;
+	font-size: 0.85rem;
+	background: var(--color-bg);
+	color: var(--color-text-muted);
+	border: 1px solid var(--color-border);
+}
+
+.order-status.status-completed,
+.order-status.status-processing {
+	background: rgba(125, 143, 94, 0.15);
+	color: var(--color-accent-dark);
+	border-color: transparent;
+}
+
+.order-status.status-pending,
+.order-status.status-on-hold {
+	background: rgba(212, 163, 79, 0.18);
+	color: #8a6519;
+	border-color: transparent;
+}
+
+.order-status.status-cancelled,
+.order-status.status-failed,
+.order-status.status-refunded {
+	background: rgba(178, 74, 58, 0.12);
+	color: #a5382a;
+	border-color: transparent;
+}
+
+/* Détail d'une commande (page "voir la commande") */
+.woocommerce-order-details,
+.woocommerce-order-downloads,
+.woocommerce-customer-details {
+	margin-top: 32px;
+}
+
+.woocommerce-order-details h2,
+.woocommerce-order-downloads h2,
+.woocommerce-customer-details h2 {
+	font-family: var(--font-heading);
+	font-size: 1.4rem;
+	margin: 0 0 16px;
+}
+
+.woocommerce-columns--addresses {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 24px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.woocommerce-columns--addresses .woocommerce-column {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border);
+	border-radius: 16px;
+	padding: 24px;
+}
+
+.woocommerce-columns--addresses address {
+	font-style: normal;
+	line-height: 1.7;
+}
+
+@media (max-width: 780px) {
+	.woocommerce-columns--addresses {
+		grid-template-columns: 1fr;
+	}
+}
+
 /* Footer */
 .site-footer {
 	background: var(--color-secondary);
