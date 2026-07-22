@@ -1,10 +1,10 @@
-name: Retirer les widgets par défaut
+name: Ajouter Mon compte au menu
 
 on:
   workflow_dispatch: {}
 
 jobs:
-  remove-widgets:
+  add-menu-item:
     runs-on: ubuntu-latest
     steps:
       - name: Installer sshpass
@@ -12,8 +12,8 @@ jobs:
 
       - name: Préparer le script distant
         run: |
-          mkdir -p /tmp/widgets
-          cat > /tmp/widgets/run.sh <<'EOF'
+          mkdir -p /tmp/menu
+          cat > /tmp/menu/run.sh <<'EOF'
           #!/bin/sh
           set -e
           cd "$HOME/www"
@@ -27,28 +27,33 @@ jobs:
             WP="php $HOME/wp-cli.phar"
           fi
 
-          echo "--- Sidebars enregistrés ---"
-          $WP sidebar list --fields=id,name,description
+          echo "--- Menus existants ---"
+          $WP menu list --fields=term_id,name,locations
 
-          echo "--- Widgets dans footer-1 ---"
-          $WP widget list footer-1 --fields=id,name || true
+          MENU_ID=$($WP menu list --locations=primary --field=term_id | head -n 1)
+          echo "--- Menu principal : $MENU_ID ---"
 
-          echo "--- Suppression des widgets par défaut dans footer-1 ---"
-          for wid in $($WP widget list footer-1 --field=id 2>/dev/null || true); do
-            $WP widget delete "$wid"
-            echo "Supprimé : $wid"
-          done
+          ACCOUNT_URL=$($WP eval 'echo wc_get_page_permalink( "myaccount" );')
+          echo "--- URL mon compte : $ACCOUNT_URL ---"
 
-          echo "--- Widgets restants dans footer-1 ---"
-          $WP widget list footer-1 --fields=id,name || true
+          EXISTING=$($WP menu item list "$MENU_ID" --fields=title,url --format=csv | grep -i "Mon compte" || true)
+          if [ -n "$EXISTING" ]; then
+            echo "--- Lien déjà présent, rien à faire ---"
+          else
+            $WP menu item add-custom "$MENU_ID" "Mon compte" "$ACCOUNT_URL"
+            echo "--- Lien ajouté ---"
+          fi
+
+          echo "--- Contenu du menu après modification ---"
+          $WP menu item list "$MENU_ID" --fields=title,url,position
           EOF
 
       - name: Envoyer le script sur le serveur
         run: |
           sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
-            /tmp/widgets/run.sh \
+            /tmp/menu/run.sh \
             "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
 
-      - name: Retirer les widgets via WP-CLI
+      - name: Ajouter via WP-CLI
         run: |
           sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh && rm -f ~/run.sh'
