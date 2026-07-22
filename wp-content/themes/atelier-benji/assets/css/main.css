@@ -589,7 +589,9 @@ ul.products li.product .button:hover {
 }
 
 .form-field input,
+.form-field select,
 .form-field textarea {
+	width: 100%;
 	font-family: var(--font-body);
 	font-size: 1rem;
 	padding: 14px 16px;
@@ -606,6 +608,7 @@ ul.products li.product .button:hover {
 }
 
 .form-field input:focus,
+.form-field select:focus,
 .form-field textarea:focus {
 	outline: none;
 	border-color: var(--color-accent);
