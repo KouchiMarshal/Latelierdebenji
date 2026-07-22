@@ -136,21 +136,21 @@ jobs:
           cat > /tmp/legal/deploy-pages.sh <<'EOF'
           #!/bin/sh
           set -e
-          cd ~/www
+          cd "$HOME/www"
           if command -v wp >/dev/null 2>&1; then
             WP="wp"
           else
-            if [ ! -f ~/wp-cli.phar ]; then
-              curl -sS -o ~/wp-cli.phar https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
-              chmod +x ~/wp-cli.phar
+            if [ ! -f "$HOME/wp-cli.phar" ]; then
+              curl -sS -o "$HOME/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x "$HOME/wp-cli.phar"
             fi
-            WP="php ~/wp-cli.phar"
+            WP="php $HOME/wp-cli.phar"
           fi
-          $WP post create ~/mentions-legales.html --post_title="Mentions légales" --post_type=page --post_status=draft
-          $WP post create ~/cgv.html --post_title="Conditions générales de vente" --post_type=page --post_status=draft
-          $WP post create ~/confidentialite.html --post_title="Politique de confidentialité" --post_type=page --post_status=draft
-          $WP post create ~/retractation.html --post_title="Droit de rétractation" --post_type=page --post_status=draft
-          rm -f ~/mentions-legales.html ~/cgv.html ~/confidentialite.html ~/retractation.html ~/deploy-pages.sh
+          $WP post create "$HOME/mentions-legales.html" --post_title="Mentions légales" --post_type=page --post_status=draft
+          $WP post create "$HOME/cgv.html" --post_title="Conditions générales de vente" --post_type=page --post_status=draft
+          $WP post create "$HOME/confidentialite.html" --post_title="Politique de confidentialité" --post_type=page --post_status=draft
+          $WP post create "$HOME/retractation.html" --post_title="Droit de rétractation" --post_type=page --post_status=draft
+          rm -f "$HOME/mentions-legales.html" "$HOME/cgv.html" "$HOME/confidentialite.html" "$HOME/retractation.html" "$HOME/deploy-pages.sh"
           EOF
 
       - name: Envoyer les fichiers sur le serveur
