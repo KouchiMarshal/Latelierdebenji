@@ -103,7 +103,11 @@ get_header();
 		<div class="wrap">
 			<h2 class="section-title"><?php esc_html_e( 'Une envie particulière ?', 'atelier-benji' ); ?></h2>
 			<p><?php esc_html_e( 'Composition sur-mesure, événement, cadeau — parlons-en et créons ensemble le bouquet parfait.', 'atelier-benji' ); ?></p>
-			<a class="button button-outline" href="mailto:<?php echo esc_attr( get_bloginfo( 'admin_email' ) ); ?>">
+			<?php
+			$contact_page = get_page_by_path( 'contact' );
+			$contact_url  = $contact_page ? get_permalink( $contact_page ) : 'mailto:' . get_bloginfo( 'admin_email' );
+			?>
+			<a class="button button-outline" href="<?php echo esc_url( $contact_url ); ?>">
 				<?php esc_html_e( 'Nous contacter', 'atelier-benji' ); ?>
 			</a>
 		</div>

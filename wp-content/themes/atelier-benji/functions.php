@@ -87,3 +87,51 @@ add_filter(
 		return 4;
 	}
 );
+
+/**
+ * Handle the front-end contact form (template-contact.php) without a plugin.
+ */
+function atelier_benji_handle_contact_form() {
+	$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+
+	if (
+		! isset( $_POST['atelier_benji_contact_nonce'] ) ||
+		! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['atelier_benji_contact_nonce'] ) ), 'atelier_benji_contact' )
+	) {
+		wp_safe_redirect( add_query_arg( 'sent', 'error', $redirect ) );
+		exit;
+	}
+
+	// Honeypot: bots fill hidden fields, humans don't.
+	if ( ! empty( $_POST['website'] ) ) {
+		wp_safe_redirect( add_query_arg( 'sent', '1', $redirect ) );
+		exit;
+	}
+
+	$name    = isset( $_POST['contact_name'] ) ? sanitize_text_field( wp_unslash( $_POST['contact_name'] ) ) : '';
+	$email   = isset( $_POST['contact_email'] ) ? sanitize_email( wp_unslash( $_POST['contact_email'] ) ) : '';
+	$subject = isset( $_POST['contact_subject'] ) ? sanitize_text_field( wp_unslash( $_POST['contact_subject'] ) ) : '';
+	$message = isset( $_POST['contact_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['contact_message'] ) ) : '';
+
+	if ( ! $name || ! is_email( $email ) || ! $message ) {
+		wp_safe_redirect( add_query_arg( 'sent', 'error', $redirect ) );
+		exit;
+	}
+
+	$to      = get_bloginfo( 'admin_email' );
+	$title   = $subject ? $subject : __( 'Nouveau message depuis le site', 'atelier-benji' );
+	$body    = sprintf(
+		"Nom : %s\nEmail : %s\n\nMessage :\n%s",
+		$name,
+		$email,
+		$message
+	);
+	$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
+
+	$sent = wp_mail( $to, $title, $body, $headers );
+
+	wp_safe_redirect( add_query_arg( 'sent', $sent ? '1' : 'error', $redirect ) );
+	exit;
+}
+add_action( 'admin_post_nopriv_atelier_benji_contact', 'atelier_benji_handle_contact_form' );
+add_action( 'admin_post_atelier_benji_contact', 'atelier_benji_handle_contact_form' );
