@@ -30,7 +30,7 @@ jobs:
           echo "--- Menus existants ---"
           $WP menu list --fields=term_id,name,locations
 
-          MENU_ID=$($WP menu list --locations=primary --field=term_id | head -n 1)
+          MENU_ID=$($WP eval 'echo get_nav_menu_locations()["primary"] ?? "";')
           echo "--- Menu principal : $MENU_ID ---"
 
           ACCOUNT_URL=$($WP eval 'echo wc_get_page_permalink( "myaccount" );')
