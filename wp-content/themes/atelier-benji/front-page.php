@@ -13,7 +13,7 @@ get_header();
 <main id="main" class="site-main front-page">
 	<section class="hero">
 		<div class="wrap hero-inner">
-			<span class="hero-eyebrow"><?php esc_html_e( 'Fait main, à Lyon', 'atelier-benji' ); ?></span>
+			<span class="hero-eyebrow"><?php esc_html_e( 'Fait main, en Normandie', 'atelier-benji' ); ?></span>
 			<h1 class="hero-title"><?php bloginfo( 'name' ); ?></h1>
 			<p class="hero-subtitle">
 				<?php
@@ -71,7 +71,7 @@ get_header();
 		<div class="about-grid">
 			<div class="about-visual" role="presentation"></div>
 			<div class="about-text">
-				<h2 class="section-title"><?php esc_html_e( "L'atelier", 'atelier-benji' ); ?></h2>
+				<h2 class="section-title"><?php esc_html_e( 'Notre histoire', 'atelier-benji' ); ?></h2>
 				<hr class="divider">
 				<div class="about-content">
 					<?php
@@ -82,8 +82,12 @@ get_header();
 						}
 					} else {
 						?>
-						<p><?php esc_html_e( "L'Atelier de Benji est né d'une passion pour les fleurs séchées et le savoir-faire artisanal. Chaque composition est pensée et assemblée à la main, brin par brin, pour capturer la douceur d'un bouquet champêtre — sans jamais se faner.", 'atelier-benji' ); ?></p>
-						<p><?php esc_html_e( "Installé au cœur de l'atelier, chaque bouquet est unique : les variations naturelles des fleurs séchées font que deux compositions ne sont jamais tout à fait identiques.", 'atelier-benji' ); ?></p>
+						<p class="about-intro"><?php esc_html_e( "Bienvenue dans l'univers de L'Atelier de Benji. 🌾✨", 'atelier-benji' ); ?></p>
+						<p><?php esc_html_e( "Je m'appelle Benjamin, j'ai 21 ans et je suis un jeune artisan fleuriste passionné, installé en Normandie. Depuis maintenant 5 ans que j'exerce dans la fleuristerie, je vis au rythme des fleurs et de la création florale, avec une affection toute particulière pour les fleurs séchées.", 'atelier-benji' ); ?></p>
+						<p><?php esc_html_e( "À travers L'Atelier de Benji, j'ai souhaité créer un univers qui me ressemble : chaleureux, naturel et authentique. Chaque création est imaginée et réalisée à la main avec soin, afin de vous proposer des compositions uniques qui traversent le temps tout en conservant toute leur beauté.", 'atelier-benji' ); ?></p>
+						<p><?php esc_html_e( 'Bouquets, couronnes, décorations murales, créations personnalisées… Chaque pièce est pensée pour sublimer votre intérieur ou accompagner les moments importants de votre vie.', 'atelier-benji' ); ?></p>
+						<p><?php esc_html_e( "Mon ambition est de partager ma passion, mon savoir-faire et ma créativité en proposant des créations artisanales qui racontent une histoire et apportent une touche de douceur à votre quotidien.", 'atelier-benji' ); ?></p>
+						<p class="about-thanks"><?php esc_html_e( "Merci de faire partie de cette belle aventure et de soutenir le projet d'un jeune entrepreneur passionné.", 'atelier-benji' ); ?></p>
 						<?php
 					}
 					?>
