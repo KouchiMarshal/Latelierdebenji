@@ -14,6 +14,17 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v4
 
+      - name: Diagnostic SFTP (temporaire)
+        run: |
+          sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" sftp -oStrictHostKeyChecking=no -oBatchMode=no -P 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" <<'EOF'
+          pwd
+          ls -la
+          ls -la www
+          ls -la www/wp-content
+          ls -la www/wp-content/themes
+          EOF
+
       - name: Déploiement du thème vers OVH (SFTP)
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
