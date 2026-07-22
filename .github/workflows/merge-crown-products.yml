@@ -1,0 +1,77 @@
+name: Fusionner les fiches couronne de naissance
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer sshpass
+        run: sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+
+      - name: Préparer les fichiers distants
+        run: |
+          mkdir -p /tmp/merge
+
+          cat > /tmp/merge/merge.php <<'EOF'
+          <?php
+          $product_id = 35;
+
+          wp_update_post( array(
+              'ID'         => $product_id,
+              'post_title' => 'Couronne de naissance personnalisée',
+              'post_content' => "Couronne réalisée à la main avec des fleurs séchées et de la verdure stabilisée, disponible en deux versions : standard ou plus fournie en fleurs séchées. Le prénom en fil de fer et les couleurs sont personnalisables : indiquez le prénom souhaité dans la note de commande à la validation de votre panier. Livrée avec son ourson en peluche.",
+          ) );
+
+          $product = wc_get_product( $product_id );
+          $variation_ids = $product->get_children();
+
+          foreach ( $variation_ids as $vid ) {
+              $variation = wc_get_product( $vid );
+              $attributes = $variation->get_variation_attributes();
+              $value = reset( $attributes );
+
+              if ( 'Standard' === $value ) {
+                  $variation->set_image_id( 34 );
+                  $variation->save();
+                  echo "Variation Standard ($vid) -> image 34 (Marceau)\n";
+              } elseif ( 'Fournie' === $value ) {
+                  $variation->set_image_id( 36 );
+                  $variation->save();
+                  echo "Variation Fournie ($vid) -> image 36 (Romane)\n";
+              }
+          }
+
+          wp_trash_post( 37 );
+          echo "Produit 37 (Rose poudré) mis à la corbeille.\n";
+
+          echo "Terminé.\n";
+          EOF
+
+          cat > /tmp/merge/run.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd "$HOME/www"
+          if command -v wp >/dev/null 2>&1; then
+            WP="wp"
+          else
+            if [ ! -f "$HOME/wp-cli.phar" ]; then
+              curl -sS -o "$HOME/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x "$HOME/wp-cli.phar"
+            fi
+            WP="php $HOME/wp-cli.phar"
+          fi
+          $WP eval-file "$HOME/merge.php"
+          rm -f "$HOME/merge.php" "$HOME/run.sh"
+          EOF
+
+      - name: Envoyer les fichiers sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            /tmp/merge/merge.php /tmp/merge/run.sh \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Fusionner via WP-CLI
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh'
