@@ -1,0 +1,54 @@
+name: Diagnostiquer la mise en page Mon compte
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer sshpass
+        run: sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+
+      - name: Préparer le script distant
+        run: |
+          mkdir -p /tmp/diag2
+          cat > /tmp/diag2/run.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd "$HOME/www"
+
+          echo "--- Requête locale sur la page compte (orders) ---"
+          curl -s -H "Host: latelierdebenji.fr" "http://127.0.0.1/index.php/mon-compte/orders/" -o /tmp/account.html -w "HTTP %{http_code}\n" || true
+
+          echo "--- Taille du fichier récupéré ---"
+          wc -c /tmp/account.html || true
+
+          echo "--- Structure woocommerce-account (2000 caractères autour) ---"
+          grep -o 'woocommerce-account.\{0,1500\}' /tmp/account.html | head -c 1600 || true
+
+          echo "--- Version du CSS chargée (lien vers main.css) ---"
+          grep -o 'main.css?ver=[^"'"'"']*' /tmp/account.html || true
+
+          echo "--- Vérifier présence des règles flex dans le CSS livré ---"
+          CSS_URL=$(grep -o 'href="[^"]*main.css?ver=[^"]*"' /tmp/account.html | head -n1 | sed 's/href="//;s/"$//')
+          echo "CSS_URL=$CSS_URL"
+          if [ -n "$CSS_URL" ]; then
+            curl -s -H "Host: latelierdebenji.fr" "http://127.0.0.1${CSS_URL#http://latelierdebenji.fr}" -o /tmp/main.css || true
+            echo "--- Taille CSS ---"
+            wc -c /tmp/main.css || true
+            echo "--- Extrait des règles Mon compte dans le CSS livré ---"
+            grep -o 'woocommerce-account {[^}]*}' /tmp/main.css || true
+            grep -o 'woocommerce-MyAccount-navigation {[^}]*}' /tmp/main.css || true
+          fi
+          EOF
+
+      - name: Envoyer le script sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            /tmp/diag2/run.sh \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Diagnostiquer
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh && rm -f ~/run.sh'
