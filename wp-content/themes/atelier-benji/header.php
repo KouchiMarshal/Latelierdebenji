@@ -18,7 +18,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php if ( has_custom_logo() ) : ?>
 				<?php the_custom_logo(); ?>
 			<?php else : ?>
-				<span class="site-title"><?php bloginfo( 'name' ); ?></span>
+				<img
+					class="site-logo-img"
+					src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/logo.jpg' ); ?>"
+					alt="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"
+				>
 			<?php endif; ?>
 		</a>
 

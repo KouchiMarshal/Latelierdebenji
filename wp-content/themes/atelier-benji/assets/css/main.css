@@ -64,6 +64,14 @@ a {
 	text-decoration: none;
 }
 
+.site-logo-img,
+.custom-logo {
+	display: block;
+	height: 72px;
+	width: auto;
+	border-radius: 50%;
+}
+
 .nav-menu, .footer-menu {
 	display: flex;
 	gap: 24px;
