@@ -933,7 +933,9 @@ ul.products li.product .button:hover {
 	width: auto !important;
 }
 
-.woocommerce-account {
+/* .woocommerce-account est une classe du <body>, pas un conteneur autour du menu
+   et du contenu : c'est .entry-content (gabarit index.php) qui les contient réellement. */
+body.woocommerce-account .entry-content {
 	display: flex !important;
 	flex-wrap: wrap;
 	gap: 40px;
@@ -993,7 +995,7 @@ ul.products li.product .button:hover {
 	margin: 0 0 20px;
 }
 
-.woocommerce-account .col2-set {
+body.woocommerce-account .col2-set {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 32px;
@@ -1100,15 +1102,15 @@ ul.products li.product .button:hover {
 }
 
 @media (max-width: 780px) {
-	.woocommerce-account {
+	body.woocommerce-account .entry-content {
 		flex-direction: column;
 	}
 
 	.woocommerce-MyAccount-navigation {
-		width: 100%;
+		width: 100% !important;
 	}
 
-	.woocommerce-account .col2-set,
+	body.woocommerce-account .col2-set,
 	.woocommerce-Addresses {
 		grid-template-columns: 1fr;
 	}
