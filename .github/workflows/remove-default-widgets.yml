@@ -27,17 +27,20 @@ jobs:
             WP="php $HOME/wp-cli.phar"
           fi
 
-          echo "--- Sidebars et widgets actuels ---"
-          $WP widget list --fields=sidebar,id,name
+          echo "--- Sidebars enregistrés ---"
+          $WP sidebar list --fields=id,name,description
+
+          echo "--- Widgets dans footer-1 ---"
+          $WP widget list footer-1 --fields=id,name || true
 
           echo "--- Suppression des widgets par défaut dans footer-1 ---"
-          for wid in $($WP widget list footer-1 --field=id); do
+          for wid in $($WP widget list footer-1 --field=id 2>/dev/null || true); do
             $WP widget delete "$wid"
             echo "Supprimé : $wid"
           done
 
-          echo "--- État final ---"
-          $WP widget list --fields=sidebar,id,name
+          echo "--- Widgets restants dans footer-1 ---"
+          $WP widget list footer-1 --fields=id,name || true
           EOF
 
       - name: Envoyer le script sur le serveur
