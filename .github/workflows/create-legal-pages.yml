@@ -131,20 +131,34 @@ jobs:
           <p><em>Ce document est un modèle à faire relire et compléter avant publication.</em></p>
           EOF
 
+      - name: Préparer le script distant
+        run: |
+          cat > /tmp/legal/deploy-pages.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd ~/www
+          if command -v wp >/dev/null 2>&1; then
+            WP="wp"
+          else
+            if [ ! -f ~/wp-cli.phar ]; then
+              curl -sS -o ~/wp-cli.phar https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x ~/wp-cli.phar
+            fi
+            WP="php ~/wp-cli.phar"
+          fi
+          $WP post create ~/mentions-legales.html --post_title="Mentions légales" --post_type=page --post_status=draft
+          $WP post create ~/cgv.html --post_title="Conditions générales de vente" --post_type=page --post_status=draft
+          $WP post create ~/confidentialite.html --post_title="Politique de confidentialité" --post_type=page --post_status=draft
+          $WP post create ~/retractation.html --post_title="Droit de rétractation" --post_type=page --post_status=draft
+          rm -f ~/mentions-legales.html ~/cgv.html ~/confidentialite.html ~/retractation.html ~/deploy-pages.sh
+          EOF
+
       - name: Envoyer les fichiers sur le serveur
         run: |
           sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
-            /tmp/legal/mentions-legales.html /tmp/legal/cgv.html /tmp/legal/confidentialite.html /tmp/legal/retractation.html \
+            /tmp/legal/mentions-legales.html /tmp/legal/cgv.html /tmp/legal/confidentialite.html /tmp/legal/retractation.html /tmp/legal/deploy-pages.sh \
             "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
 
       - name: Créer les pages via WP-CLI (brouillons)
         run: |
-          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" '
-            set -e
-            cd ~/www
-            wp post create ~/mentions-legales.html --post_title="Mentions légales" --post_type=page --post_status=draft
-            wp post create ~/cgv.html --post_title="Conditions générales de vente" --post_type=page --post_status=draft
-            wp post create ~/confidentialite.html --post_title="Politique de confidentialité" --post_type=page --post_status=draft
-            wp post create ~/retractation.html --post_title="Droit de rétractation" --post_type=page --post_status=draft
-            rm -f ~/mentions-legales.html ~/cgv.html ~/confidentialite.html ~/retractation.html
-          '
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/deploy-pages.sh && sh ~/deploy-pages.sh'
