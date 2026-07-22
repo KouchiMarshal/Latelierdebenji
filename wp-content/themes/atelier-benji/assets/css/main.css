@@ -1,15 +1,15 @@
-/* Atelier Benji — palette et mise en page de base.
-   Placeholder en attendant l'intégration du logo et de la charte graphique. */
+/* Atelier Benji — palette champêtre (marron / vert sauge).
+   En attendant l'intégration du logo définitif. */
 
 :root {
-	--color-bg: #faf6f0;
-	--color-surface: #ffffff;
-	--color-text: #3e2c23;
-	--color-text-muted: #7a6a5e;
-	--color-accent: #c1652f;
-	--color-accent-dark: #a5501f;
-	--color-secondary: #6b7a5e;
-	--color-border: #e6ddd1;
+	--color-bg: #f6f1e7;
+	--color-surface: #fffdf8;
+	--color-text: #4a3c2a;
+	--color-text-muted: #8a7a5f;
+	--color-accent: #7d8f5e;
+	--color-accent-dark: #5f6f47;
+	--color-secondary: #6f4e33;
+	--color-border: #e2d9c3;
 	--font-heading: Georgia, 'Times New Roman', serif;
 	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	--max-width: 1140px;
@@ -186,7 +186,7 @@ ul.products li.product img {
 
 /* Footer */
 .site-footer {
-	background: var(--color-text);
+	background: var(--color-secondary);
 	color: #fff;
 	padding: 48px 24px 24px;
 	margin-top: 48px;

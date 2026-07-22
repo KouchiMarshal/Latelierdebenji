@@ -25,7 +25,7 @@ get_header();
 
 	<?php if ( class_exists( 'WooCommerce' ) ) : ?>
 		<section class="featured-products wrap">
-			<h2 class="section-title"><?php esc_html_e( 'Nos créations', 'atelier-benji' ); ?></h2>
+			<h2 class="section-title"><?php esc_html_e( 'Nos compositions', 'atelier-benji' ); ?></h2>
 			<?php echo do_shortcode( '[products limit="8" columns="4" orderby="date" order="DESC"]' ); ?>
 		</section>
 	<?php endif; ?>
@@ -40,7 +40,7 @@ get_header();
 					the_content();
 				}
 			} else {
-				esc_html_e( 'Présentez ici votre atelier, votre savoir-faire et votre histoire.', 'atelier-benji' );
+				esc_html_e( 'Présentez ici votre atelier, votre savoir-faire dans la composition florale séchée et votre histoire.', 'atelier-benji' );
 			}
 			?>
 		</div>
