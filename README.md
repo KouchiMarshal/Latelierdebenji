@@ -66,9 +66,9 @@ Actions → New repository secret**), ajoutez :
 | `OVH_FTP_PASSWORD` | Mot de passe FTP (utilisez un identifiant FTP dédié, pas le mot de passe du compte client OVH) |
 | `OVH_FTP_THEME_DIR` | Chemin serveur vers le dossier du thème, ex. `/www/wp-content/themes/atelier-benji/` |
 
-Le déploiement se fait en FTPS (chiffré). Une fois les secrets en place,
-fusionnez cette branche dans `main` pour déclencher le premier
-déploiement automatique.
+Le déploiement se fait en SFTP (chiffré via SSH, port 22). Une fois les
+secrets en place, fusionnez cette branche dans `main` pour déclencher le
+premier déploiement automatique.
 
 ## 5. Personnalisation du design
 

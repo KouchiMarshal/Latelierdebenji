@@ -8,18 +8,19 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  ftp-deploy:
+  sftp-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Récupération du code
         uses: actions/checkout@v4
 
-      - name: Déploiement du thème vers OVH
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - name: Déploiement du thème vers OVH (SFTP)
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: ${{ secrets.OVH_FTP_SERVER }}
+          port: 22
           username: ${{ secrets.OVH_FTP_USERNAME }}
           password: ${{ secrets.OVH_FTP_PASSWORD }}
-          local-dir: ./wp-content/themes/atelier-benji/
-          server-dir: ${{ secrets.OVH_FTP_THEME_DIR }}
-          protocol: ftps
+          local_path: ./wp-content/themes/atelier-benji/*
+          remote_path: ${{ secrets.OVH_FTP_THEME_DIR }}
+          sftp_only: true
