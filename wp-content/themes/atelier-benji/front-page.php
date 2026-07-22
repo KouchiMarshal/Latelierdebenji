@@ -79,23 +79,12 @@ get_header();
 				<h2 class="section-title"><?php esc_html_e( 'Notre histoire', 'atelier-benji' ); ?></h2>
 				<hr class="divider">
 				<div class="about-content">
-					<?php
-					if ( have_posts() ) {
-						while ( have_posts() ) {
-							the_post();
-							the_content();
-						}
-					} else {
-						?>
-						<p class="about-intro"><?php esc_html_e( "Bienvenue dans l'univers de L'Atelier de Benji. 🌾✨", 'atelier-benji' ); ?></p>
-						<p><?php esc_html_e( "Je m'appelle Benjamin, j'ai 21 ans et je suis un jeune artisan fleuriste passionné, installé en Normandie. Depuis maintenant 5 ans que j'exerce dans la fleuristerie, je vis au rythme des fleurs et de la création florale, avec une affection toute particulière pour les fleurs séchées.", 'atelier-benji' ); ?></p>
-						<p><?php esc_html_e( "À travers L'Atelier de Benji, j'ai souhaité créer un univers qui me ressemble : chaleureux, naturel et authentique. Chaque création est imaginée et réalisée à la main avec soin, afin de vous proposer des compositions uniques qui traversent le temps tout en conservant toute leur beauté.", 'atelier-benji' ); ?></p>
-						<p><?php esc_html_e( 'Bouquets, couronnes, décorations murales, créations personnalisées… Chaque pièce est pensée pour sublimer votre intérieur ou accompagner les moments importants de votre vie.', 'atelier-benji' ); ?></p>
-						<p><?php esc_html_e( "Mon ambition est de partager ma passion, mon savoir-faire et ma créativité en proposant des créations artisanales qui racontent une histoire et apportent une touche de douceur à votre quotidien.", 'atelier-benji' ); ?></p>
-						<p class="about-thanks"><?php esc_html_e( "Merci de faire partie de cette belle aventure et de soutenir le projet d'un jeune entrepreneur passionné.", 'atelier-benji' ); ?></p>
-						<?php
-					}
-					?>
+					<p class="about-intro"><?php esc_html_e( "Bienvenue dans l'univers de L'Atelier de Benji. 🌾✨", 'atelier-benji' ); ?></p>
+					<p><?php esc_html_e( "Je m'appelle Benjamin, j'ai 21 ans et je suis un jeune artisan fleuriste passionné, installé en Normandie. Depuis maintenant 5 ans que j'exerce dans la fleuristerie, je vis au rythme des fleurs et de la création florale, avec une affection toute particulière pour les fleurs séchées.", 'atelier-benji' ); ?></p>
+					<p><?php esc_html_e( "À travers L'Atelier de Benji, j'ai souhaité créer un univers qui me ressemble : chaleureux, naturel et authentique. Chaque création est imaginée et réalisée à la main avec soin, afin de vous proposer des compositions uniques qui traversent le temps tout en conservant toute leur beauté.", 'atelier-benji' ); ?></p>
+					<p><?php esc_html_e( 'Bouquets, couronnes, décorations murales, créations personnalisées… Chaque pièce est pensée pour sublimer votre intérieur ou accompagner les moments importants de votre vie.', 'atelier-benji' ); ?></p>
+					<p><?php esc_html_e( "Mon ambition est de partager ma passion, mon savoir-faire et ma créativité en proposant des créations artisanales qui racontent une histoire et apportent une touche de douceur à votre quotidien.", 'atelier-benji' ); ?></p>
+					<p class="about-thanks"><?php esc_html_e( "Merci de faire partie de cette belle aventure et de soutenir le projet d'un jeune entrepreneur passionné.", 'atelier-benji' ); ?></p>
 				</div>
 			</div>
 		</div>
