@@ -26,14 +26,8 @@ jobs:
             fi
             WP="php $HOME/wp-cli.phar"
           fi
-          for slug in mentions-legales conditions-generales-de-vente politique-de-confidentialite droit-de-retractation; do
-            id=$($WP post list --pagename="$slug" --post_type=page --field=ID --format=ids)
-            if [ -n "$id" ]; then
-              $WP post update "$id" --post_status=publish
-            else
-              echo "Introuvable : $slug"
-            fi
-          done
+          echo "--- Pages existantes ---"
+          $WP post list --post_type=page --fields=ID,post_title,post_name,post_status
           rm -f "$HOME/publish-pages.sh"
           EOF
 
