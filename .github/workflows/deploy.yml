@@ -23,4 +23,4 @@ jobs:
           password: ${{ secrets.OVH_FTP_PASSWORD }}
           local_path: ./wp-content/themes/atelier-benji
           remote_path: ${{ secrets.OVH_FTP_THEME_DIR }}
-          sftp_only: false
+          sftp_only: true
