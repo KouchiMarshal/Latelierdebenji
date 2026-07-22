@@ -36,8 +36,6 @@ jobs:
           echo "--- Page boutique (option woocommerce_shop_page_id) ---"
           $WP option get woocommerce_shop_page_id
 
-          echo "--- Test direct : tri par prix croissant ---"
-          curl -s -o /dev/null -w "HTTP %{http_code}\n" "https://latelierdebenji.fr/boutique/?orderby=price"
           EOF
 
       - name: Envoyer le script sur le serveur
@@ -51,6 +49,7 @@ jobs:
           sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh && rm -f ~/run.sh'
 
       - name: Comparer l'ordre des produits selon le tri (depuis le runner, en HTTPS public)
+        if: always()
         run: |
           UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36"
 
