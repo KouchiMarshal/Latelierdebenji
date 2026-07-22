@@ -76,10 +76,12 @@ a {
 }
 
 .site-logo-img,
-.custom-logo {
-	display: block;
-	height: 72px;
-	width: auto;
+.custom-logo,
+a.custom-logo-link img {
+	display: block !important;
+	height: 72px !important;
+	width: auto !important;
+	max-width: none !important;
 	border-radius: 50%;
 }
 
