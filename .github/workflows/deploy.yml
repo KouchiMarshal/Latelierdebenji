@@ -21,6 +21,6 @@ jobs:
           port: 22
           username: ${{ secrets.OVH_FTP_USERNAME }}
           password: ${{ secrets.OVH_FTP_PASSWORD }}
-          local_path: ./wp-content/themes/atelier-benji/*
+          local_path: ./wp-content/themes/atelier-benji
           remote_path: ${{ secrets.OVH_FTP_THEME_DIR }}
           sftp_only: true
