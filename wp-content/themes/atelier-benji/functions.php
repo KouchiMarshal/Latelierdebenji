@@ -41,9 +41,9 @@ function atelier_benji_scripts() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.6.0' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.6.0' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.6.0', true );
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.6.1' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.6.1' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.6.1', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 
