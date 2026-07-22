@@ -41,9 +41,9 @@ function atelier_benji_scripts() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.6.1' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.6.1' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.6.1', true );
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.7.0' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.7.0' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.7.0', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 
@@ -135,3 +135,108 @@ function atelier_benji_handle_contact_form() {
 }
 add_action( 'admin_post_nopriv_atelier_benji_contact', 'atelier_benji_handle_contact_form' );
 add_action( 'admin_post_atelier_benji_contact', 'atelier_benji_handle_contact_form' );
+
+/**
+ * Champs de personnalisation (texte + couleur) sur les couronnes personnalisables.
+ * IDs des produits concernés : Couronne de naissance personnalisée (35),
+ * Couronne photo personnalisée - Souvenirs (39).
+ */
+function atelier_benji_personalizable_product_ids() {
+	return array( 35, 39 );
+}
+
+add_action( 'woocommerce_before_add_to_cart_button', 'atelier_benji_personalization_fields' );
+function atelier_benji_personalization_fields() {
+	global $product;
+
+	if ( ! $product || ! in_array( $product->get_id(), atelier_benji_personalizable_product_ids(), true ) ) {
+		return;
+	}
+	?>
+	<div class="atelier-benji-personalization">
+		<p class="form-field">
+			<label for="atelier_benji_text">
+				<?php esc_html_e( 'Texte à personnaliser (prénom, dédicace…)', 'atelier-benji' ); ?>
+				<span class="required">*</span>
+			</label>
+			<input type="text" id="atelier_benji_text" name="atelier_benji_text" required>
+		</p>
+		<p class="form-field">
+			<label for="atelier_benji_color">
+				<?php esc_html_e( 'Couleur souhaitée', 'atelier-benji' ); ?>
+				<span class="required">*</span>
+			</label>
+			<select id="atelier_benji_color" name="atelier_benji_color" required>
+				<option value=""><?php esc_html_e( 'Choisir…', 'atelier-benji' ); ?></option>
+				<option value="Champêtre (vert/marron)"><?php esc_html_e( 'Champêtre (vert/marron)', 'atelier-benji' ); ?></option>
+				<option value="Rose poudré"><?php esc_html_e( 'Rose poudré', 'atelier-benji' ); ?></option>
+			</select>
+		</p>
+	</div>
+	<?php
+}
+
+add_filter( 'woocommerce_add_to_cart_validation', 'atelier_benji_validate_personalization', 10, 3 );
+function atelier_benji_validate_personalization( $passed, $product_id, $quantity ) {
+	if ( ! in_array( $product_id, atelier_benji_personalizable_product_ids(), true ) ) {
+		return $passed;
+	}
+
+	if ( empty( $_POST['atelier_benji_text'] ) ) {
+		wc_add_notice( __( "Merci d'indiquer le texte à personnaliser.", 'atelier-benji' ), 'error' );
+		$passed = false;
+	}
+
+	if ( empty( $_POST['atelier_benji_color'] ) ) {
+		wc_add_notice( __( 'Merci de choisir une couleur.', 'atelier-benji' ), 'error' );
+		$passed = false;
+	}
+
+	return $passed;
+}
+
+add_filter( 'woocommerce_add_cart_item_data', 'atelier_benji_add_cart_item_data', 10, 2 );
+function atelier_benji_add_cart_item_data( $cart_item_data, $product_id ) {
+	if ( in_array( $product_id, atelier_benji_personalizable_product_ids(), true ) ) {
+		if ( ! empty( $_POST['atelier_benji_text'] ) ) {
+			$cart_item_data['atelier_benji_text'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_text'] ) );
+		}
+		if ( ! empty( $_POST['atelier_benji_color'] ) ) {
+			$cart_item_data['atelier_benji_color'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_color'] ) );
+		}
+		// Chaque personnalisation est unique : évite la fusion de lignes différentes dans le panier.
+		$cart_item_data['unique_key'] = md5( microtime() . wp_rand() );
+	}
+
+	return $cart_item_data;
+}
+
+add_filter( 'woocommerce_get_item_data', 'atelier_benji_display_cart_item_data', 10, 2 );
+function atelier_benji_display_cart_item_data( $item_data, $cart_item ) {
+	if ( ! empty( $cart_item['atelier_benji_text'] ) ) {
+		$item_data[] = array(
+			'key'   => __( 'Personnalisation', 'atelier-benji' ),
+			'value' => wc_clean( $cart_item['atelier_benji_text'] ),
+		);
+	}
+
+	if ( ! empty( $cart_item['atelier_benji_color'] ) ) {
+		$item_data[] = array(
+			'key'   => __( 'Couleur', 'atelier-benji' ),
+			'value' => wc_clean( $cart_item['atelier_benji_color'] ),
+		);
+	}
+
+	return $item_data;
+}
+
+add_action( 'woocommerce_checkout_create_order_line_item', 'atelier_benji_add_order_item_meta', 10, 4 );
+function atelier_benji_add_order_item_meta( $item, $cart_item_key, $values, $order ) {
+	if ( ! empty( $values['atelier_benji_text'] ) ) {
+		$item->add_meta_data( __( 'Personnalisation', 'atelier-benji' ), $values['atelier_benji_text'] );
+	}
+
+	if ( ! empty( $values['atelier_benji_color'] ) ) {
+		$item->add_meta_data( __( 'Couleur', 'atelier-benji' ), $values['atelier_benji_color'] );
+	}
+}

@@ -777,6 +777,15 @@ ul.products li.product .button:hover {
 	margin: 24px 0;
 }
 
+.atelier-benji-personalization {
+	margin: 24px 0;
+	max-width: 420px;
+}
+
+.atelier-benji-personalization .required {
+	color: #a5382a;
+}
+
 .woocommerce div.product .quantity input.qty {
 	width: 70px;
 	padding: 12px 14px;
