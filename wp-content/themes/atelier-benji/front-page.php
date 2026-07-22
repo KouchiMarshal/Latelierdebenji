@@ -69,7 +69,12 @@ get_header();
 
 	<section class="about wrap" id="atelier">
 		<div class="about-grid">
-			<div class="about-visual" role="presentation"></div>
+			<div class="about-visual">
+				<img
+					src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/benjamin.jpg' ); ?>"
+					alt="<?php esc_attr_e( 'Benjamin, fondateur de L\'Atelier de Benji, avec un bouquet', 'atelier-benji' ); ?>"
+				>
+			</div>
 			<div class="about-text">
 				<h2 class="section-title"><?php esc_html_e( 'Notre histoire', 'atelier-benji' ); ?></h2>
 				<hr class="divider">
