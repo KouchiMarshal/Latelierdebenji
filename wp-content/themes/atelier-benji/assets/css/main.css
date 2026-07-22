@@ -401,72 +401,102 @@ ul.products li.product img {
 /* Contact page */
 .page-hero {
 	text-align: center;
-	padding: 72px 24px 24px;
+	padding: 88px 24px 40px;
+}
+
+.page-hero .hero-eyebrow {
+	font-size: 1.35rem;
 }
 
 .page-hero-content {
 	color: var(--color-text-muted);
-	max-width: 560px;
+	max-width: 520px;
 	margin: 0 auto;
+	font-size: 1.05rem;
 }
 
 .contact-section {
-	padding: 24px 24px 96px;
-	max-width: 640px;
+	padding: 8px 24px 112px;
+	max-width: 720px;
+}
+
+.contact-card {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 20px;
+	padding: 48px;
+	box-shadow: 0 24px 48px -24px rgba(74, 60, 42, 0.18);
 }
 
 .contact-form {
 	display: flex;
 	flex-direction: column;
-	gap: 4px;
+}
+
+.form-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0 20px;
 }
 
 .form-field {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
-	margin: 0 0 20px;
+	gap: 8px;
+	margin: 0 0 22px;
 }
 
 .form-field label {
 	font-weight: 500;
+	font-size: 0.9rem;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--color-text-muted);
 }
 
 .form-field input,
 .form-field textarea {
 	font-family: var(--font-body);
 	font-size: 1rem;
-	padding: 12px 14px;
+	padding: 14px 16px;
 	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	background: var(--color-surface);
+	border-radius: 10px;
+	background: var(--color-bg);
 	color: var(--color-text);
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+	color: #b3a68f;
 }
 
 .form-field input:focus,
 .form-field textarea:focus {
 	outline: none;
 	border-color: var(--color-accent);
+	box-shadow: 0 0 0 3px rgba(125, 143, 94, 0.18);
 }
 
-.form-field-hidden {
-	position: absolute;
-	left: -9999px;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
+.form-field textarea {
+	resize: vertical;
+	min-height: 140px;
 }
 
-.contact-form .button {
+.contact-submit {
 	border: none;
 	cursor: pointer;
 	font-size: 1rem;
+	margin-top: 8px;
+	align-self: flex-start;
+	padding: 14px 40px;
 }
 
 .form-message {
 	padding: 14px 18px;
-	border-radius: 8px;
+	border-radius: 10px;
 	margin-bottom: 24px;
+	font-size: 0.95rem;
 }
 
 .form-success {
@@ -477,6 +507,16 @@ ul.products li.product img {
 .form-error {
 	background: rgba(178, 74, 58, 0.12);
 	color: #a5382a;
+}
+
+@media (max-width: 640px) {
+	.contact-card {
+		padding: 32px 24px;
+	}
+
+	.form-row {
+		grid-template-columns: 1fr;
+	}
 }
 
 /* Footer */
