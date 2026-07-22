@@ -18,36 +18,22 @@ jobs:
           set -e
           cd "$HOME/www"
 
-          echo "--- Contenu de \$HOME/www ---"
-          ls -la . || true
+          echo "--- Arborescence complete sous wp-content/themes ---"
+          find wp-content/themes -maxdepth 8 2>/dev/null || true
 
-          echo "--- Recherche de main.css sur le serveur ---"
-          find . -maxdepth 6 -path '*atelier-benji/assets/css/main.css' 2>/dev/null || true
+          echo "--- Toutes les occurrences de style.css sous atelier-benji ---"
+          find wp-content/themes -name "style.css" -exec sh -c 'echo "=== {} ==="; grep -i "^Version:" "{}"; stat -c "%y %n" "{}"' \; 2>/dev/null || true
 
-          CSS_PATH=$(find . -maxdepth 6 -path '*atelier-benji/assets/css/main.css' 2>/dev/null | head -n1)
-          STYLE_PATH=$(find . -maxdepth 6 -path '*atelier-benji/style.css' 2>/dev/null | head -n1)
-          echo "CSS_PATH=$CSS_PATH"
-          echo "STYLE_PATH=$STYLE_PATH"
+          echo "--- Toutes les occurrences de main.css sous atelier-benji ---"
+          find wp-content/themes -name "main.css" -exec sh -c 'echo "=== {} ==="; wc -l "{}"; grep -c "Mon compte" "{}"; stat -c "%y %n" "{}"' \; 2>/dev/null || true
 
-          echo "--- Version dans style.css sur le serveur ---"
-          grep -i "^Version:" "$STYLE_PATH" || true
-
-          echo "--- Taille de main.css sur le serveur ---"
-          wc -l "$CSS_PATH" || true
-
-          echo "--- Présence de la section Mon compte dans main.css ---"
-          grep -n "Mon compte" "$CSS_PATH" || echo "NON TROUVE"
-
-          echo "--- Règle .woocommerce-account (bloc complet) ---"
-          awk '/^\.woocommerce-account \{/{p=1} p{print} /^\}/{if(p){exit}}' "$CSS_PATH" || true
-
-          echo "--- Règle .woocommerce-MyAccount-navigation (premier bloc) ---"
-          grep -A6 "^\.woocommerce-MyAccount-navigation {" "$CSS_PATH" | head -n8 || true
-
-          echo "--- Vérifier accolades équilibrées dans main.css ---"
-          OPEN=$(grep -o "{" "$CSS_PATH" | wc -l)
-          CLOSE=$(grep -o "}" "$CSS_PATH" | wc -l)
-          echo "Ouvertures: $OPEN / Fermetures: $CLOSE"
+          echo "--- Theme actif selon WordPress (wp_options) ---"
+          if command -v wp >/dev/null 2>&1; then
+            wp option get stylesheet
+            wp option get template
+          else
+            grep -o "template.\{0,80\}" wp-content/*.php 2>/dev/null | head -n1 || true
+          fi
           EOF
 
       - name: Envoyer le script sur le serveur
