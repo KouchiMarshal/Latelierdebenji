@@ -1,0 +1,203 @@
+/* Atelier Benji — palette et mise en page de base.
+   Placeholder en attendant l'intégration du logo et de la charte graphique. */
+
+:root {
+	--color-bg: #faf6f0;
+	--color-surface: #ffffff;
+	--color-text: #3e2c23;
+	--color-text-muted: #7a6a5e;
+	--color-accent: #c1652f;
+	--color-accent-dark: #a5501f;
+	--color-secondary: #6b7a5e;
+	--color-border: #e6ddd1;
+	--font-heading: Georgia, 'Times New Roman', serif;
+	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	--max-width: 1140px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-body);
+	line-height: 1.6;
+}
+
+.wrap {
+	max-width: var(--max-width);
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+h1, h2, h3 {
+	font-family: var(--font-heading);
+	line-height: 1.2;
+}
+
+a {
+	color: var(--color-accent);
+}
+
+/* Header */
+.site-header {
+	background: var(--color-surface);
+	border-bottom: 1px solid var(--color-border);
+}
+
+.site-header-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 24px;
+	padding: 20px 24px;
+}
+
+.site-title {
+	font-family: var(--font-heading);
+	font-size: 1.5rem;
+	font-weight: bold;
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.nav-menu, .footer-menu {
+	display: flex;
+	gap: 24px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-menu a, .footer-menu a {
+	text-decoration: none;
+	color: var(--color-text);
+	font-weight: 500;
+}
+
+.cart-link {
+	text-decoration: none;
+	font-weight: 600;
+	color: var(--color-text);
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	padding: 8px 16px;
+}
+
+/* Hero */
+.hero {
+	background: var(--color-surface);
+	text-align: center;
+	padding: 80px 24px;
+}
+
+.hero-title {
+	font-size: 2.75rem;
+	margin: 0 0 12px;
+}
+
+.hero-subtitle {
+	color: var(--color-text-muted);
+	font-size: 1.15rem;
+	margin: 0 0 28px;
+}
+
+.button {
+	display: inline-block;
+	text-decoration: none;
+	padding: 14px 32px;
+	border-radius: 999px;
+	font-weight: 600;
+}
+
+.button-primary {
+	background: var(--color-accent);
+	color: #fff;
+}
+
+.button-primary:hover {
+	background: var(--color-accent-dark);
+}
+
+/* Sections */
+.section-title {
+	text-align: center;
+	font-size: 2rem;
+	margin: 0 0 32px;
+}
+
+.featured-products, .about {
+	padding: 64px 24px;
+}
+
+.about {
+	max-width: 760px;
+	text-align: center;
+}
+
+/* WooCommerce product grid */
+ul.products {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 32px;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+ul.products li.product {
+	text-align: center;
+}
+
+ul.products li.product img {
+	width: 100%;
+	height: auto;
+	border-radius: 8px;
+	margin-bottom: 12px;
+}
+
+@media (max-width: 900px) {
+	ul.products {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (max-width: 600px) {
+	.site-header-inner {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	ul.products {
+		grid-template-columns: 1fr;
+	}
+
+	.hero {
+		padding: 56px 20px;
+	}
+
+	.hero-title {
+		font-size: 2rem;
+	}
+}
+
+/* Footer */
+.site-footer {
+	background: var(--color-text);
+	color: #fff;
+	padding: 48px 24px 24px;
+	margin-top: 48px;
+}
+
+.site-footer a {
+	color: #fff;
+}
+
+.footer-copy {
+	color: #cbbfb2;
+	font-size: 0.9rem;
+	margin-top: 24px;
+}
