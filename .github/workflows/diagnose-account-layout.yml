@@ -18,29 +18,28 @@ jobs:
           set -e
           cd "$HOME/www"
 
-          echo "--- Requête locale sur la page compte (orders) ---"
-          curl -s -H "Host: latelierdebenji.fr" "http://127.0.0.1/index.php/mon-compte/orders/" -o /tmp/account.html -w "HTTP %{http_code}\n" || true
+          CSS_PATH="wp-content/themes/atelier-benji/assets/css/main.css"
+          STYLE_PATH="wp-content/themes/atelier-benji/style.css"
 
-          echo "--- Taille du fichier récupéré ---"
-          wc -c /tmp/account.html || true
+          echo "--- Version dans style.css sur le serveur ---"
+          grep -i "^Version:" "$STYLE_PATH" || true
 
-          echo "--- Structure woocommerce-account (2000 caractères autour) ---"
-          grep -o 'woocommerce-account.\{0,1500\}' /tmp/account.html | head -c 1600 || true
+          echo "--- Taille de main.css sur le serveur ---"
+          wc -l "$CSS_PATH" || true
 
-          echo "--- Version du CSS chargée (lien vers main.css) ---"
-          grep -o 'main.css?ver=[^"'"'"']*' /tmp/account.html || true
+          echo "--- Présence de la section Mon compte dans main.css ---"
+          grep -n "Mon compte" "$CSS_PATH" || echo "NON TROUVE"
 
-          echo "--- Vérifier présence des règles flex dans le CSS livré ---"
-          CSS_URL=$(grep -o 'href="[^"]*main.css?ver=[^"]*"' /tmp/account.html | head -n1 | sed 's/href="//;s/"$//')
-          echo "CSS_URL=$CSS_URL"
-          if [ -n "$CSS_URL" ]; then
-            curl -s -H "Host: latelierdebenji.fr" "http://127.0.0.1${CSS_URL#http://latelierdebenji.fr}" -o /tmp/main.css || true
-            echo "--- Taille CSS ---"
-            wc -c /tmp/main.css || true
-            echo "--- Extrait des règles Mon compte dans le CSS livré ---"
-            grep -o 'woocommerce-account {[^}]*}' /tmp/main.css || true
-            grep -o 'woocommerce-MyAccount-navigation {[^}]*}' /tmp/main.css || true
-          fi
+          echo "--- Règle .woocommerce-account (bloc complet) ---"
+          awk '/^\.woocommerce-account \{/{p=1} p{print} /^\}/{if(p){exit}}' "$CSS_PATH" || true
+
+          echo "--- Règle .woocommerce-MyAccount-navigation (premier bloc) ---"
+          grep -A6 "^\.woocommerce-MyAccount-navigation {" "$CSS_PATH" | head -n8 || true
+
+          echo "--- Vérifier accolades équilibrées dans main.css ---"
+          OPEN=$(grep -o "{" "$CSS_PATH" | wc -l)
+          CLOSE=$(grep -o "}" "$CSS_PATH" | wc -l)
+          echo "Ouvertures: $OPEN / Fermetures: $CLOSE"
           EOF
 
       - name: Envoyer le script sur le serveur
