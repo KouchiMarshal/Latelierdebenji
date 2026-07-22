@@ -349,8 +349,9 @@ a {
 }
 
 /* WooCommerce product grid */
+.woocommerce ul.products,
 ul.products {
-	display: grid;
+	display: grid !important;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 32px;
 	list-style: none;
@@ -358,6 +359,7 @@ ul.products {
 	padding: 0;
 }
 
+.woocommerce ul.products li.product,
 ul.products li.product {
 	text-align: center;
 	background: var(--color-surface);
@@ -365,27 +367,37 @@ ul.products li.product {
 	border-radius: 16px;
 	padding: 20px 20px 28px;
 	transition: box-shadow 0.2s ease, transform 0.2s ease;
+	width: auto !important;
+	float: none !important;
+	margin: 0 !important;
 }
 
+.woocommerce ul.products li.product:hover,
 ul.products li.product:hover {
 	box-shadow: 0 20px 40px -24px rgba(74, 60, 42, 0.25);
 	transform: translateY(-2px);
 }
 
+.woocommerce ul.products li.product a,
 ul.products li.product a {
 	text-decoration: none;
 	color: var(--color-text);
 }
 
+.woocommerce ul.products li.product a img,
+.woocommerce ul.products li.product img,
 ul.products li.product img {
-	width: 100%;
-	height: auto;
+	display: block !important;
+	width: 100% !important;
+	height: auto !important;
+	max-width: none !important;
 	border-radius: 10px;
-	margin-bottom: 16px;
-	aspect-ratio: 1;
-	object-fit: cover;
+	margin: 0 0 16px !important;
+	aspect-ratio: 1 !important;
+	object-fit: cover !important;
 }
 
+.woocommerce ul.products li.product .woocommerce-loop-product__title,
 ul.products li.product .woocommerce-loop-product__title {
 	font-family: var(--font-heading);
 	font-size: 1.2rem;
@@ -393,11 +405,13 @@ ul.products li.product .woocommerce-loop-product__title {
 	margin: 0 0 6px;
 }
 
+.woocommerce ul.products li.product .price,
 ul.products li.product .price {
 	color: var(--color-accent-dark);
 	font-weight: 500;
 }
 
+.woocommerce ul.products li.product .button,
 ul.products li.product .button {
 	display: inline-block;
 	margin-top: 14px;
@@ -409,6 +423,7 @@ ul.products li.product .button {
 	text-decoration: none;
 }
 
+.woocommerce ul.products li.product .button:hover,
 ul.products li.product .button:hover {
 	background: var(--color-accent-dark);
 }
