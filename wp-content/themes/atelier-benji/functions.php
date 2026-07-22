@@ -41,9 +41,9 @@ function atelier_benji_scripts() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.7.1' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.7.1' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.7.1', true );
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.7.2' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.7.2' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.7.2', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 
@@ -145,6 +145,37 @@ function atelier_benji_personalizable_product_ids() {
 	return array( 35, 39 );
 }
 
+/**
+ * Couleurs disponibles pour les fleurs séchées (fournisseur).
+ */
+function atelier_benji_color_options() {
+	return array(
+		'Argent',
+		'Blanc',
+		'Blanchi',
+		'Bleu',
+		'Bordeaux',
+		'Bronze',
+		'Brun',
+		'Crème',
+		'Gris',
+		'Jaune',
+		'Lavande',
+		'Métallique',
+		'Mix',
+		'Naturel',
+		'Noir',
+		'Or',
+		'Orange',
+		'Rose',
+		'Rouge',
+		'Saumon',
+		'Terre cuite',
+		'Vert',
+		'Violet',
+	);
+}
+
 add_action( 'woocommerce_before_add_to_cart_button', 'atelier_benji_personalization_fields' );
 function atelier_benji_personalization_fields() {
 	global $product;
@@ -168,8 +199,9 @@ function atelier_benji_personalization_fields() {
 			</label>
 			<select id="atelier_benji_color" name="atelier_benji_color" required>
 				<option value=""><?php esc_html_e( 'Choisir…', 'atelier-benji' ); ?></option>
-				<option value="Champêtre (vert/marron)"><?php esc_html_e( 'Champêtre (vert/marron)', 'atelier-benji' ); ?></option>
-				<option value="Rose poudré"><?php esc_html_e( 'Rose poudré', 'atelier-benji' ); ?></option>
+				<?php foreach ( atelier_benji_color_options() as $color ) : ?>
+					<option value="<?php echo esc_attr( $color ); ?>"><?php echo esc_html( $color ); ?></option>
+				<?php endforeach; ?>
 			</select>
 		</p>
 	</div>
