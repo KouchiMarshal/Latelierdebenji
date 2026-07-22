@@ -26,8 +26,9 @@ jobs:
             fi
             WP="php $HOME/wp-cli.phar"
           fi
-          echo "--- Pages existantes ---"
-          $WP post list --post_type=page --fields=ID,post_title,post_name,post_status
+          for id in 15 16 17 18; do
+            $WP post update "$id" --post_status=publish
+          done
           rm -f "$HOME/publish-pages.sh"
           EOF
 
