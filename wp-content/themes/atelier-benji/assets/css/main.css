@@ -929,19 +929,19 @@ ul.products li.product .button:hover {
 /* Mon compte */
 .woocommerce-account .woocommerce-MyAccount-navigation,
 .woocommerce-account .woocommerce-MyAccount-content {
-	float: none;
-	width: auto;
+	float: none !important;
+	width: auto !important;
 }
 
 .woocommerce-account {
-	display: flex;
+	display: flex !important;
 	flex-wrap: wrap;
 	gap: 40px;
 	align-items: flex-start;
 }
 
 .woocommerce-MyAccount-navigation {
-	flex: 0 0 240px;
+	flex: 0 0 240px !important;
 	background: var(--color-surface);
 	border: 1px solid var(--color-border);
 	border-radius: 16px;
@@ -976,8 +976,12 @@ ul.products li.product .button:hover {
 }
 
 .woocommerce-MyAccount-content {
-	flex: 1 1 320px;
+	flex: 1 1 320px !important;
 	min-width: 280px;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 16px;
+	padding: 32px;
 }
 
 .woocommerce-MyAccount-content h2,
