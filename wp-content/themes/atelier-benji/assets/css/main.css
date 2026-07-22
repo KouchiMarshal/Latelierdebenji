@@ -360,13 +360,125 @@ ul.products {
 
 ul.products li.product {
 	text-align: center;
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 16px;
+	padding: 20px 20px 28px;
+	transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+ul.products li.product:hover {
+	box-shadow: 0 20px 40px -24px rgba(74, 60, 42, 0.25);
+	transform: translateY(-2px);
+}
+
+ul.products li.product a {
+	text-decoration: none;
+	color: var(--color-text);
 }
 
 ul.products li.product img {
 	width: 100%;
 	height: auto;
+	border-radius: 10px;
+	margin-bottom: 16px;
+	aspect-ratio: 1;
+	object-fit: cover;
+}
+
+ul.products li.product .woocommerce-loop-product__title {
+	font-family: var(--font-heading);
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin: 0 0 6px;
+}
+
+ul.products li.product .price {
+	color: var(--color-accent-dark);
+	font-weight: 500;
+}
+
+ul.products li.product .button {
+	display: inline-block;
+	margin-top: 14px;
+	padding: 10px 24px;
+	font-size: 0.9rem;
+	background: var(--color-accent);
+	color: #fff;
+	border-radius: 999px;
+	text-decoration: none;
+}
+
+ul.products li.product .button:hover {
+	background: var(--color-accent-dark);
+}
+
+/* Shop archive page */
+.shop-section {
+	padding: 8px 24px 96px;
+}
+
+.woocommerce-notices-wrapper {
+	max-width: var(--max-width);
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+.woocommerce-result-count,
+.woocommerce-ordering {
+	color: var(--color-text-muted);
+}
+
+.woocommerce-ordering select {
+	font-family: var(--font-body);
+	padding: 8px 12px;
+	border: 1px solid var(--color-border);
 	border-radius: 8px;
-	margin-bottom: 12px;
+	background: var(--color-surface);
+	color: var(--color-text);
+}
+
+.woocommerce-pagination {
+	margin-top: 48px;
+	text-align: center;
+}
+
+.woocommerce-pagination ul {
+	display: inline-flex;
+	gap: 8px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.woocommerce-pagination a,
+.woocommerce-pagination span.current {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	height: 40px;
+	border-radius: 999px;
+	border: 1px solid var(--color-border);
+	color: var(--color-text);
+	text-decoration: none;
+}
+
+.woocommerce-pagination span.current {
+	background: var(--color-accent);
+	color: #fff;
+	border-color: var(--color-accent);
+}
+
+.woocommerce-info,
+.woocommerce-message {
+	max-width: var(--max-width);
+	margin: 0 auto 24px;
+	padding: 14px 18px;
+	border-radius: 10px;
+	list-style: none;
+	background: rgba(125, 143, 94, 0.15);
+	color: var(--color-accent-dark);
 }
 
 @media (max-width: 900px) {
