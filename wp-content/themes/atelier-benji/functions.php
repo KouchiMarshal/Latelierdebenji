@@ -35,9 +35,15 @@ function atelier_benji_setup() {
 add_action( 'after_setup_theme', 'atelier_benji_setup' );
 
 function atelier_benji_scripts() {
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.0.0' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style' ), '1.0.0' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.0.0', true );
+	wp_enqueue_style(
+		'atelier-benji-fonts',
+		'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Dancing+Script:wght@600&family=Jost:wght@400;500&display=swap',
+		array(),
+		null
+	);
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.0.1' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.0.1' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.0.1', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 

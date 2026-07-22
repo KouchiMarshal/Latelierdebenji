@@ -10,8 +10,9 @@
 	--color-accent-dark: #5f6f47;
 	--color-secondary: #6f4e33;
 	--color-border: #e2d9c3;
-	--font-heading: Georgia, 'Times New Roman', serif;
-	--font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	--font-heading: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+	--font-script: 'Dancing Script', cursive;
+	--font-body: 'Jost', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 	--max-width: 1140px;
 }
 
@@ -35,7 +36,17 @@ body {
 
 h1, h2, h3 {
 	font-family: var(--font-heading);
+	font-weight: 600;
 	line-height: 1.2;
+}
+
+.divider {
+	width: 64px;
+	height: 2px;
+	background: var(--color-accent);
+	border: none;
+	margin: 0 auto 20px;
+	opacity: 0.6;
 }
 
 a {
@@ -97,20 +108,42 @@ a {
 
 /* Hero */
 .hero {
-	background: var(--color-surface);
+	position: relative;
+	background:
+		radial-gradient(circle at 12% 20%, rgba(125, 143, 94, 0.10) 0, transparent 40%),
+		radial-gradient(circle at 88% 15%, rgba(111, 78, 51, 0.08) 0, transparent 45%),
+		var(--color-surface);
 	text-align: center;
-	padding: 80px 24px;
+	padding: 96px 24px 88px;
+	overflow: hidden;
+}
+
+.hero-eyebrow {
+	display: block;
+	font-family: var(--font-script);
+	font-size: 1.5rem;
+	color: var(--color-accent-dark);
+	margin: 0 0 4px;
 }
 
 .hero-title {
-	font-size: 2.75rem;
-	margin: 0 0 12px;
+	font-size: 3.25rem;
+	margin: 0 0 16px;
+	letter-spacing: 0.5px;
 }
 
 .hero-subtitle {
 	color: var(--color-text-muted);
-	font-size: 1.15rem;
-	margin: 0 0 28px;
+	font-size: 1.2rem;
+	max-width: 560px;
+	margin: 0 auto 32px;
+}
+
+.hero-actions {
+	display: flex;
+	gap: 16px;
+	justify-content: center;
+	flex-wrap: wrap;
 }
 
 .button {
@@ -118,7 +151,9 @@ a {
 	text-decoration: none;
 	padding: 14px 32px;
 	border-radius: 999px;
-	font-weight: 600;
+	font-weight: 500;
+	font-family: var(--font-body);
+	transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .button-primary {
@@ -130,20 +165,187 @@ a {
 	background: var(--color-accent-dark);
 }
 
+.button-outline {
+	border: 1px solid var(--color-text);
+	color: var(--color-text);
+}
+
+.button-outline:hover {
+	background: var(--color-text);
+	color: #fff;
+}
+
 /* Sections */
 .section-title {
 	text-align: center;
-	font-size: 2rem;
-	margin: 0 0 32px;
+	font-size: 2.25rem;
+	margin: 0 0 12px;
 }
 
-.featured-products, .about {
-	padding: 64px 24px;
-}
-
-.about {
-	max-width: 760px;
+.section-intro {
 	text-align: center;
+	color: var(--color-text-muted);
+	max-width: 560px;
+	margin: 0 auto 40px;
+}
+
+.featured-products {
+	padding: 72px 24px;
+}
+
+.featured-products .cta-more {
+	text-align: center;
+	margin-top: 40px;
+}
+
+/* USP strip */
+.usp-strip {
+	background: var(--color-surface);
+	border-top: 1px solid var(--color-border);
+	border-bottom: 1px solid var(--color-border);
+	padding: 40px 24px;
+}
+
+.usp-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+	text-align: center;
+}
+
+.usp-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+.usp-icon {
+	font-size: 1.75rem;
+}
+
+.usp-item h3 {
+	font-size: 1.1rem;
+	margin: 0;
+}
+
+.usp-item p {
+	color: var(--color-text-muted);
+	margin: 0;
+	font-size: 0.95rem;
+}
+
+/* About / atelier */
+.about {
+	padding: 88px 24px;
+}
+
+.about-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 56px;
+	align-items: center;
+}
+
+.about-visual {
+	aspect-ratio: 4 / 5;
+	border-radius: 16px;
+	background:
+		radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.5), transparent 55%),
+		linear-gradient(135deg, var(--color-border), var(--color-accent) 120%);
+	position: relative;
+}
+
+.about-visual::after {
+	content: "🌾";
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 4rem;
+	opacity: 0.6;
+}
+
+.about-text .section-title {
+	text-align: left;
+	margin-bottom: 20px;
+}
+
+.about-text .divider {
+	margin-left: 0;
+}
+
+.about-content p {
+	color: var(--color-text-muted);
+}
+
+/* Quote */
+.quote-section {
+	text-align: center;
+	padding: 64px 24px;
+	background: var(--color-surface);
+}
+
+.quote-text {
+	font-family: var(--font-script);
+	font-size: 2rem;
+	color: var(--color-accent-dark);
+	max-width: 640px;
+	margin: 0 auto;
+	line-height: 1.4;
+}
+
+.quote-author {
+	margin-top: 16px;
+	color: var(--color-text-muted);
+	font-size: 0.95rem;
+}
+
+/* CTA band */
+.cta-band {
+	text-align: center;
+	padding: 72px 24px;
+	background: var(--color-secondary);
+	color: #fff;
+}
+
+.cta-band .section-title {
+	color: #fff;
+}
+
+.cta-band p {
+	color: #e8ddce;
+	max-width: 480px;
+	margin: 0 auto 28px;
+}
+
+.cta-band .button-outline {
+	border-color: #fff;
+	color: #fff;
+}
+
+.cta-band .button-outline:hover {
+	background: #fff;
+	color: var(--color-secondary);
+}
+
+@media (max-width: 780px) {
+	.about-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.about-text .section-title {
+		text-align: center;
+	}
+
+	.about-text .divider {
+		margin: 0 auto 20px;
+	}
+
+	.usp-grid {
+		grid-template-columns: 1fr;
+	}
 }
 
 /* WooCommerce product grid */
@@ -184,11 +386,15 @@ ul.products li.product img {
 	}
 
 	.hero {
-		padding: 56px 20px;
+		padding: 56px 20px 64px;
 	}
 
 	.hero-title {
-		font-size: 2rem;
+		font-size: 2.25rem;
+	}
+
+	.quote-text {
+		font-size: 1.5rem;
 	}
 }
 
