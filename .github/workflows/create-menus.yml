@@ -1,0 +1,83 @@
+name: Créer les menus
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  create-menus:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer sshpass
+        run: sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+
+      - name: Préparer le script distant
+        run: |
+          mkdir -p /tmp/menus
+          cat > /tmp/menus/create-menus.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd "$HOME/www"
+          if command -v wp >/dev/null 2>&1; then
+            WP="wp"
+          else
+            if [ ! -f "$HOME/wp-cli.phar" ]; then
+              curl -sS -o "$HOME/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x "$HOME/wp-cli.phar"
+            fi
+            WP="php $HOME/wp-cli.phar"
+          fi
+
+          SITEURL=$($WP option get siteurl)
+          SHOP_ID=$($WP option get woocommerce_shop_page_id)
+          CONTACT_ID=$($WP post list --post_type=page --pagename=contact --field=ID --format=ids)
+
+          # --- Menu principal ---
+          MENU_ID=$($WP menu list --fields=term_id,name --format=csv | awk -F, -v n="Menu principal" '$2==n{print $1}')
+          if [ -z "$MENU_ID" ]; then
+            MENU_ID=$($WP menu create "Menu principal" --porcelain)
+          fi
+          $WP menu location assign "$MENU_ID" primary
+
+          OLD_ITEMS=$($WP menu item list "$MENU_ID" --format=ids || true)
+          for i in $OLD_ITEMS; do $WP menu item delete "$i"; done
+
+          $WP menu item add-custom "$MENU_ID" "Accueil" "$SITEURL/"
+          if [ -n "$SHOP_ID" ]; then
+            $WP menu item add-post "$MENU_ID" "$SHOP_ID"
+          fi
+          $WP menu item add-custom "$MENU_ID" "L'atelier" "$SITEURL/#atelier"
+          if [ -n "$CONTACT_ID" ]; then
+            $WP menu item add-post "$MENU_ID" "$CONTACT_ID"
+          fi
+
+          # --- Menu pied de page ---
+          FOOTER_ID=$($WP menu list --fields=term_id,name --format=csv | awk -F, -v n="Menu pied de page" '$2==n{print $1}')
+          if [ -z "$FOOTER_ID" ]; then
+            FOOTER_ID=$($WP menu create "Menu pied de page" --porcelain)
+          fi
+          $WP menu location assign "$FOOTER_ID" footer
+
+          OLD_FOOTER_ITEMS=$($WP menu item list "$FOOTER_ID" --format=ids || true)
+          for i in $OLD_FOOTER_ITEMS; do $WP menu item delete "$i"; done
+
+          for pid in 15 16 17 18; do
+            $WP menu item add-post "$FOOTER_ID" "$pid" || true
+          done
+          if [ -n "$CONTACT_ID" ]; then
+            $WP menu item add-post "$FOOTER_ID" "$CONTACT_ID"
+          fi
+
+          echo "Menu principal ID: $MENU_ID"
+          echo "Menu pied de page ID: $FOOTER_ID"
+          rm -f "$HOME/create-menus.sh"
+          EOF
+
+      - name: Envoyer le script sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            /tmp/menus/create-menus.sh \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Créer les menus via WP-CLI
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/create-menus.sh && sh ~/create-menus.sh'
