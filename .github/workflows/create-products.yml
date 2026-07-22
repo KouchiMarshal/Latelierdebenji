@@ -1,0 +1,87 @@
+name: Créer les fiches produits
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  create-products:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installer sshpass
+        run: sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+
+      - name: Envoyer les photos sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            .github/tmp-products/marceau.jpg .github/tmp-products/romane.jpg .github/tmp-products/photo-wreath.jpg \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Préparer le script distant
+        run: |
+          mkdir -p /tmp/products
+          cat > /tmp/products/create-products.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd "$HOME/www"
+          if command -v wp >/dev/null 2>&1; then
+            WP="wp"
+          else
+            if [ ! -f "$HOME/wp-cli.phar" ]; then
+              curl -sS -o "$HOME/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x "$HOME/wp-cli.phar"
+            fi
+            WP="php $HOME/wp-cli.phar"
+          fi
+
+          create_product () {
+            title="$1"
+            price="$2"
+            content="$3"
+            image="$4"
+
+            img_id=$($WP media import "$HOME/$image" --title="$title" --porcelain)
+            prod_id=$($WP post create --post_type=product --post_title="$title" --post_content="$content" --post_status=publish --porcelain)
+            $WP post meta update "$prod_id" _thumbnail_id "$img_id"
+            $WP post meta update "$prod_id" _price "$price"
+            $WP post meta update "$prod_id" _regular_price "$price"
+            $WP post meta update "$prod_id" _manage_stock "no"
+            $WP post meta update "$prod_id" _stock_status "instock"
+            $WP post meta update "$prod_id" _virtual "no"
+            $WP post meta update "$prod_id" _downloadable "no"
+            $WP post term add "$prod_id" product_type simple
+            echo "Produit créé : $title (ID $prod_id, image $img_id)"
+          }
+
+          create_product \
+            "Couronne de naissance personnalisée - Champêtre" \
+            "45.00" \
+            "Couronne réalisée à la main avec des fleurs séchées et de la verdure stabilisée, dans des tons champêtres. Le prénom en fil de fer et les couleurs sont personnalisables : indiquez le prénom souhaité dans la note de commande à la validation de votre panier. Livrée avec son ourson en peluche." \
+            "marceau.jpg"
+
+          create_product \
+            "Couronne de naissance personnalisée - Rose poudré" \
+            "45.00" \
+            "Couronne réalisée à la main avec des fleurs séchées et de la verdure stabilisée, dans des tons rose poudré et dorés. Le prénom en fil de fer et les couleurs sont personnalisables : indiquez le prénom souhaité dans la note de commande à la validation de votre panier. Livrée avec son ourson en peluche." \
+            "romane.jpg"
+
+          create_product \
+            "Couronne photo personnalisée - Souvenirs" \
+            "55.00" \
+            "Couronne composée de fleurs séchées, fougères et coton stabilisés, pensée pour mettre en valeur vos plus beaux souvenirs en photo. Envoyez-nous vos photos par email après votre commande, nous vous recontacterons pour finaliser la composition." \
+            "photo-wreath.jpg"
+
+          rm -f "$HOME/marceau.jpg" "$HOME/romane.jpg" "$HOME/photo-wreath.jpg" "$HOME/create-products.sh"
+          EOF
+
+      - name: Envoyer le script sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            /tmp/products/create-products.sh \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Créer les produits via WP-CLI
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/create-products.sh && sh ~/create-products.sh'
