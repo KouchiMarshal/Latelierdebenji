@@ -190,7 +190,7 @@ function atelier_benji_personalization_fields() {
 				<?php esc_html_e( 'Texte à personnaliser (prénom, dédicace…)', 'atelier-benji' ); ?>
 				<span class="required">*</span>
 			</label>
-			<input type="text" id="atelier_benji_text" name="atelier_benji_text" required>
+			<input type="text" id="atelier_benji_text" name="atelier_benji_text">
 		</p>
 		<p class="form-field">
 			<label for="atelier_benji_color">
@@ -208,13 +208,124 @@ function atelier_benji_personalization_fields() {
 	<?php
 }
 
+/**
+ * Options payantes propres a la couronne de naissance (35) :
+ * peluche, taille du prenom, couleur et matiere du noeud.
+ */
+function atelier_benji_wreath_addon_product_ids() {
+	return array( 35 );
+}
+
+function atelier_benji_peluche_options() {
+	return array(
+		''       => __( 'Aucune', 'atelier-benji' ),
+		'ourson' => __( 'Ourson (+12€)', 'atelier-benji' ),
+		'lapin'  => __( 'Lapin (+15€)', 'atelier-benji' ),
+	);
+}
+
+function atelier_benji_peluche_price( $key ) {
+	$prices = array(
+		'ourson' => 12,
+		'lapin'  => 15,
+	);
+	return isset( $prices[ $key ] ) ? $prices[ $key ] : 0;
+}
+
+function atelier_benji_prenom_taille_options() {
+	return array(
+		''      => __( 'Aucun', 'atelier-benji' ),
+		'petit' => __( 'Petit (+6€)', 'atelier-benji' ),
+		'grand' => __( 'Grand (+10€)', 'atelier-benji' ),
+	);
+}
+
+function atelier_benji_prenom_taille_price( $key ) {
+	$prices = array(
+		'petit' => 6,
+		'grand' => 10,
+	);
+	return isset( $prices[ $key ] ) ? $prices[ $key ] : 0;
+}
+
+function atelier_benji_noeud_couleur_options() {
+	return array( 'Blanc', 'Ivoire', 'Beige', 'Marron', 'Noir', 'Rouge', 'Rose', 'Bleu', 'Vert', 'Doré', 'Argenté', 'Bordeaux' );
+}
+
+function atelier_benji_noeud_matiere_options() {
+	return array( 'Jute', 'Satin' );
+}
+
+add_action( 'woocommerce_before_add_to_cart_button', 'atelier_benji_wreath_addon_fields', 20 );
+function atelier_benji_wreath_addon_fields() {
+	global $product;
+
+	if ( ! $product || ! in_array( $product->get_id(), atelier_benji_wreath_addon_product_ids(), true ) ) {
+		return;
+	}
+	?>
+	<div class="atelier-benji-personalization atelier-benji-wreath-addons">
+		<p class="form-field">
+			<label for="atelier_benji_prenom_taille">
+				<?php esc_html_e( 'Prénom en fil de fer', 'atelier-benji' ); ?>
+			</label>
+			<select id="atelier_benji_prenom_taille" name="atelier_benji_prenom_taille">
+				<?php foreach ( atelier_benji_prenom_taille_options() as $key => $label ) : ?>
+					<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p class="form-field">
+			<label for="atelier_benji_peluche">
+				<?php esc_html_e( 'Peluche', 'atelier-benji' ); ?>
+			</label>
+			<select id="atelier_benji_peluche" name="atelier_benji_peluche">
+				<?php foreach ( atelier_benji_peluche_options() as $key => $label ) : ?>
+					<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p class="form-field">
+			<label for="atelier_benji_noeud_couleur">
+				<?php esc_html_e( 'Couleur du nœud', 'atelier-benji' ); ?>
+			</label>
+			<select id="atelier_benji_noeud_couleur" name="atelier_benji_noeud_couleur">
+				<?php foreach ( atelier_benji_noeud_couleur_options() as $color ) : ?>
+					<option value="<?php echo esc_attr( $color ); ?>"><?php echo esc_html( $color ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p class="form-field">
+			<label for="atelier_benji_noeud_matiere">
+				<?php esc_html_e( 'Matière du nœud', 'atelier-benji' ); ?>
+			</label>
+			<select id="atelier_benji_noeud_matiere" name="atelier_benji_noeud_matiere">
+				<?php foreach ( atelier_benji_noeud_matiere_options() as $matiere ) : ?>
+					<option value="<?php echo esc_attr( $matiere ); ?>"><?php echo esc_html( $matiere ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</p>
+		<p class="atelier-benji-addon-note">
+			<?php esc_html_e( 'Les options avec supplément sont ajoutées au prix affiché dans votre panier.', 'atelier-benji' ); ?>
+		</p>
+	</div>
+	<?php
+}
+
 add_filter( 'woocommerce_add_to_cart_validation', 'atelier_benji_validate_personalization', 10, 3 );
 function atelier_benji_validate_personalization( $passed, $product_id, $quantity ) {
 	if ( ! in_array( $product_id, atelier_benji_personalizable_product_ids(), true ) ) {
 		return $passed;
 	}
 
-	if ( empty( $_POST['atelier_benji_text'] ) ) {
+	$text_required = true;
+
+	if ( in_array( $product_id, atelier_benji_wreath_addon_product_ids(), true ) ) {
+		$prenom_taille = isset( $_POST['atelier_benji_prenom_taille'] ) ? sanitize_text_field( wp_unslash( $_POST['atelier_benji_prenom_taille'] ) ) : '';
+		$text_required = ( '' !== $prenom_taille );
+	}
+
+	if ( $text_required && empty( $_POST['atelier_benji_text'] ) ) {
 		wc_add_notice( __( "Merci d'indiquer le texte à personnaliser.", 'atelier-benji' ), 'error' );
 		$passed = false;
 	}
@@ -227,20 +338,66 @@ function atelier_benji_validate_personalization( $passed, $product_id, $quantity
 	return $passed;
 }
 
-add_filter( 'woocommerce_add_cart_item_data', 'atelier_benji_add_cart_item_data', 10, 2 );
-function atelier_benji_add_cart_item_data( $cart_item_data, $product_id ) {
-	if ( in_array( $product_id, atelier_benji_personalizable_product_ids(), true ) ) {
+add_filter( 'woocommerce_add_cart_item_data', 'atelier_benji_add_cart_item_data', 10, 3 );
+function atelier_benji_add_cart_item_data( $cart_item_data, $product_id, $variation_id ) {
+	$is_personalizable = in_array( $product_id, atelier_benji_personalizable_product_ids(), true );
+	$is_wreath_addon    = in_array( $product_id, atelier_benji_wreath_addon_product_ids(), true );
+
+	if ( ! $is_personalizable && ! $is_wreath_addon ) {
+		return $cart_item_data;
+	}
+
+	if ( $is_personalizable ) {
 		if ( ! empty( $_POST['atelier_benji_text'] ) ) {
 			$cart_item_data['atelier_benji_text'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_text'] ) );
 		}
 		if ( ! empty( $_POST['atelier_benji_color'] ) ) {
 			$cart_item_data['atelier_benji_color'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_color'] ) );
 		}
-		// Chaque personnalisation est unique : évite la fusion de lignes différentes dans le panier.
-		$cart_item_data['unique_key'] = md5( microtime() . wp_rand() );
 	}
 
+	if ( $is_wreath_addon ) {
+		if ( ! empty( $_POST['atelier_benji_prenom_taille'] ) ) {
+			$cart_item_data['atelier_benji_prenom_taille'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_prenom_taille'] ) );
+		}
+		if ( ! empty( $_POST['atelier_benji_peluche'] ) ) {
+			$cart_item_data['atelier_benji_peluche'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_peluche'] ) );
+		}
+		if ( ! empty( $_POST['atelier_benji_noeud_couleur'] ) ) {
+			$cart_item_data['atelier_benji_noeud_couleur'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_noeud_couleur'] ) );
+		}
+		if ( ! empty( $_POST['atelier_benji_noeud_matiere'] ) ) {
+			$cart_item_data['atelier_benji_noeud_matiere'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_noeud_matiere'] ) );
+		}
+
+		$price_product = $variation_id ? wc_get_product( $variation_id ) : wc_get_product( $product_id );
+		if ( $price_product ) {
+			$cart_item_data['atelier_benji_base_price'] = (float) $price_product->get_price();
+		}
+	}
+
+	// Chaque personnalisation est unique : évite la fusion de lignes différentes dans le panier.
+	$cart_item_data['unique_key'] = md5( microtime() . wp_rand() );
+
 	return $cart_item_data;
+}
+
+add_action( 'woocommerce_before_calculate_totals', 'atelier_benji_apply_wreath_addon_prices' );
+function atelier_benji_apply_wreath_addon_prices( $cart ) {
+	if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+		return;
+	}
+
+	foreach ( $cart->get_cart() as $cart_item ) {
+		if ( ! isset( $cart_item['atelier_benji_base_price'] ) ) {
+			continue;
+		}
+
+		$surcharge  = atelier_benji_peluche_price( $cart_item['atelier_benji_peluche'] ?? '' );
+		$surcharge += atelier_benji_prenom_taille_price( $cart_item['atelier_benji_prenom_taille'] ?? '' );
+
+		$cart_item['data']->set_price( $cart_item['atelier_benji_base_price'] + $surcharge );
+	}
 }
 
 add_filter( 'woocommerce_get_item_data', 'atelier_benji_display_cart_item_data', 10, 2 );
@@ -259,6 +416,36 @@ function atelier_benji_display_cart_item_data( $item_data, $cart_item ) {
 		);
 	}
 
+	if ( ! empty( $cart_item['atelier_benji_prenom_taille'] ) ) {
+		$labels      = atelier_benji_prenom_taille_options();
+		$item_data[] = array(
+			'key'   => __( 'Taille du prénom', 'atelier-benji' ),
+			'value' => isset( $labels[ $cart_item['atelier_benji_prenom_taille'] ] ) ? $labels[ $cart_item['atelier_benji_prenom_taille'] ] : wc_clean( $cart_item['atelier_benji_prenom_taille'] ),
+		);
+	}
+
+	if ( ! empty( $cart_item['atelier_benji_peluche'] ) ) {
+		$labels      = atelier_benji_peluche_options();
+		$item_data[] = array(
+			'key'   => __( 'Peluche', 'atelier-benji' ),
+			'value' => isset( $labels[ $cart_item['atelier_benji_peluche'] ] ) ? $labels[ $cart_item['atelier_benji_peluche'] ] : wc_clean( $cart_item['atelier_benji_peluche'] ),
+		);
+	}
+
+	if ( ! empty( $cart_item['atelier_benji_noeud_couleur'] ) ) {
+		$item_data[] = array(
+			'key'   => __( 'Couleur du nœud', 'atelier-benji' ),
+			'value' => wc_clean( $cart_item['atelier_benji_noeud_couleur'] ),
+		);
+	}
+
+	if ( ! empty( $cart_item['atelier_benji_noeud_matiere'] ) ) {
+		$item_data[] = array(
+			'key'   => __( 'Matière du nœud', 'atelier-benji' ),
+			'value' => wc_clean( $cart_item['atelier_benji_noeud_matiere'] ),
+		);
+	}
+
 	return $item_data;
 }
 
@@ -270,5 +457,23 @@ function atelier_benji_add_order_item_meta( $item, $cart_item_key, $values, $ord
 
 	if ( ! empty( $values['atelier_benji_color'] ) ) {
 		$item->add_meta_data( __( 'Couleur', 'atelier-benji' ), $values['atelier_benji_color'] );
+	}
+
+	if ( ! empty( $values['atelier_benji_prenom_taille'] ) ) {
+		$labels = atelier_benji_prenom_taille_options();
+		$item->add_meta_data( __( 'Taille du prénom', 'atelier-benji' ), isset( $labels[ $values['atelier_benji_prenom_taille'] ] ) ? $labels[ $values['atelier_benji_prenom_taille'] ] : $values['atelier_benji_prenom_taille'] );
+	}
+
+	if ( ! empty( $values['atelier_benji_peluche'] ) ) {
+		$labels = atelier_benji_peluche_options();
+		$item->add_meta_data( __( 'Peluche', 'atelier-benji' ), isset( $labels[ $values['atelier_benji_peluche'] ] ) ? $labels[ $values['atelier_benji_peluche'] ] : $values['atelier_benji_peluche'] );
+	}
+
+	if ( ! empty( $values['atelier_benji_noeud_couleur'] ) ) {
+		$item->add_meta_data( __( 'Couleur du nœud', 'atelier-benji' ), $values['atelier_benji_noeud_couleur'] );
+	}
+
+	if ( ! empty( $values['atelier_benji_noeud_matiere'] ) ) {
+		$item->add_meta_data( __( 'Matière du nœud', 'atelier-benji' ), $values['atelier_benji_noeud_matiere'] );
 	}
 }

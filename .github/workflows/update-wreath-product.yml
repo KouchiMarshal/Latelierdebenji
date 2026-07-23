@@ -1,0 +1,125 @@
+name: Restructurer la couronne de naissance (tailles + options)
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  update-wreath:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer sshpass
+        run: sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+
+      - name: Préparer le script distant
+        run: |
+          mkdir -p /tmp/wreath
+          cat > /tmp/wreath/run.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd "$HOME/www"
+          if command -v wp >/dev/null 2>&1; then
+            WP="wp"
+          else
+            if [ ! -f "$HOME/wp-cli.phar" ]; then
+              curl -sS -o "$HOME/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x "$HOME/wp-cli.phar"
+            fi
+            WP="php $HOME/wp-cli.phar"
+          fi
+
+          cat > /tmp/wreath.php <<'PHP'
+          <?php
+          $product_id = 35;
+          $product    = wc_get_product( $product_id );
+
+          if ( ! $product || ! $product->is_type( 'variable' ) ) {
+              echo "ERREUR: produit 35 introuvable ou non variable\n";
+              return;
+          }
+
+          foreach ( $product->get_children() as $variation_id ) {
+              wp_delete_post( $variation_id, true );
+          }
+
+          $attribute = new WC_Product_Attribute();
+          $attribute->set_id( 0 );
+          $attribute->set_name( 'Cerceau' );
+          $attribute->set_options( array( '30 cm', '40 cm', '50 cm', '80 cm', '1 m' ) );
+          $attribute->set_position( 0 );
+          $attribute->set_visible( true );
+          $attribute->set_variation( true );
+
+          $product->set_attributes( array( $attribute ) );
+          $product->save();
+
+          $sizes_prices = array(
+              '30 cm' => 35,
+              '40 cm' => 45,
+              '50 cm' => 60,
+              '80 cm' => 85,
+              '1 m'   => 115,
+          );
+
+          foreach ( $sizes_prices as $size => $price ) {
+              $variation = new WC_Product_Variation();
+              $variation->set_parent_id( $product_id );
+              $variation->set_attributes( array( 'cerceau' => $size ) );
+              $variation->set_regular_price( (string) $price );
+              $variation->set_price( (string) $price );
+              $variation->set_status( 'publish' );
+              $variation->save();
+              echo "Variation creee : $size => {$price}e (ID " . $variation->get_id() . ")\n";
+          }
+
+          WC_Product_Variable::sync( $product_id );
+
+          echo "OK - produit 35 restructure avec l'attribut Cerceau\n";
+          PHP
+
+          echo "--- Application de la nouvelle structure de variations ---"
+          $WP eval-file /tmp/wreath.php
+
+          cat > /tmp/desc35.txt <<'DESC35'
+          Une couronne fleurie unique, façonnée à la main pour célébrer une naissance ou tout autre heureux événement.
+
+          Chaque couronne est composée de fleurs séchées et de verdure stabilisée, choisies et assemblées une à une dans mon atelier, en Normandie. Elle est disponible en cinq tailles de cerceau (30 cm, 40 cm, 50 cm, 80 cm et 1 m), pour s'adapter à toutes les envies et tous les espaces.
+
+          Personnalisez votre création directement sur cette page :
+          - le prénom en fil de fer, en petit ou grand format ;
+          - une peluche à accrocher (ourson ou lapin) ;
+          - la couleur des fleurs séchées ;
+          - la couleur et la matière (jute ou satin) du nœud.
+
+          Chaque commande est ensuite réalisée sur-mesure, avec le plus grand soin.
+
+          Les fleurs séchées et la verdure stabilisée se conservent naturellement plusieurs années, à l'abri du soleil direct et de l'humidité : un souvenir durable, à l'image du moment qu'il célèbre.
+          DESC35
+
+          cat > /tmp/excerpt35.txt <<'EXC35'
+          Couronne artisanale en fleurs séchées, disponible en 5 tailles (30 cm à 1 m). Personnalisable : prénom en fil de fer, peluche, couleur des fleurs et du nœud.
+          EXC35
+
+          for f in /tmp/desc35.txt /tmp/excerpt35.txt; do
+            sed -i 's/^[[:space:]]*//' "$f"
+          done
+
+          echo "--- Mise a jour de la description ---"
+          $WP post update 35 --post_content="$(cat /tmp/desc35.txt)" --post_excerpt="$(cat /tmp/excerpt35.txt)"
+
+          echo "--- Verification ---"
+          $WP post get 35 --field=post_excerpt
+          echo "---"
+          $WP post get 35 --field=post_content
+          echo "--- Variations ---"
+          $WP eval 'foreach ( wc_get_product( 35 )->get_children() as $vid ) { $v = wc_get_product( $vid ); echo $v->get_attribute_summary() . " => " . $v->get_price() . "e\n"; }'
+          EOF
+
+      - name: Envoyer le script sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            /tmp/wreath/run.sh \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Restructurer via WP-CLI
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh && rm -f ~/run.sh'

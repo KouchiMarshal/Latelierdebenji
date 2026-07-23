@@ -863,6 +863,12 @@ ul.products li.product .button:hover {
 	color: #a5382a;
 }
 
+.atelier-benji-addon-note {
+	font-size: 0.85rem;
+	color: var(--color-text-muted);
+	margin: 8px 0 0;
+}
+
 .woocommerce div.product .quantity input.qty {
 	width: 70px;
 	padding: 12px 14px;
