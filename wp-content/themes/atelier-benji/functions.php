@@ -41,9 +41,9 @@ function atelier_benji_scripts() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.12.4' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.12.4' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.12.4', true );
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.13.0' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.13.0' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.13.0', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 
@@ -237,8 +237,8 @@ function atelier_benji_peluche_price( $key ) {
 function atelier_benji_prenom_taille_options() {
 	return array(
 		''      => __( 'Aucun', 'atelier-benji' ),
-		'petit' => __( 'Petit (+6€)', 'atelier-benji' ),
-		'grand' => __( 'Grand (+10€)', 'atelier-benji' ),
+		'petit' => __( 'Petit - 1 ligne (+6€)', 'atelier-benji' ),
+		'grand' => __( 'Grand - 2 lignes (+10€)', 'atelier-benji' ),
 	);
 }
 
