@@ -814,6 +814,7 @@ ul.products li.product .button:hover {
 	vertical-align: middle;
 	display: block;
 	width: auto;
+	text-align: left;
 }
 
 .woocommerce div.product .variations label {
