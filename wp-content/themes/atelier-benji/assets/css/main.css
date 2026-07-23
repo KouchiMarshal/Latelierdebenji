@@ -803,32 +803,43 @@ ul.products li.product .button:hover {
 
 .woocommerce div.product .variations {
 	width: 100%;
-	margin-bottom: 20px;
+	max-width: 420px;
+	margin-bottom: 22px;
+	border-collapse: collapse;
 }
 
 .woocommerce div.product .variations td,
 .woocommerce div.product .variations th {
-	padding: 8px 0;
+	padding: 0;
 	vertical-align: middle;
+	display: block;
+	width: auto;
 }
 
 .woocommerce div.product .variations label {
 	font-weight: 500;
 	text-transform: uppercase;
-	font-size: 0.85rem;
+	font-size: 0.9rem;
 	letter-spacing: 0.02em;
 	color: var(--color-text-muted);
 }
 
 .woocommerce div.product .variations select {
+	width: 100%;
 	font-family: var(--font-body);
 	font-size: 1rem;
-	padding: 10px 14px;
+	padding: 14px 16px;
 	border: 1px solid var(--color-border);
-	border-radius: 8px;
-	background: var(--color-surface);
+	border-radius: 10px;
+	background: var(--color-bg);
 	color: var(--color-text);
-	min-width: 200px;
+	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.woocommerce div.product .variations select:focus {
+	outline: none;
+	border-color: var(--color-accent);
+	box-shadow: 0 0 0 3px rgba(125, 143, 94, 0.18);
 }
 
 .woocommerce div.product .woocommerce-variation-price .price {
@@ -837,8 +848,14 @@ ul.products li.product .button:hover {
 
 .woocommerce div.product table.variations tr {
 	display: flex;
-	align-items: center;
-	gap: 12px;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 8px;
+	margin-bottom: 22px;
+}
+
+.woocommerce div.product table.variations tr:last-child {
+	margin-bottom: 0;
 }
 
 .woocommerce div.product .reset_variations {
@@ -1015,11 +1032,6 @@ ul.products li.product .button:hover {
 @media (max-width: 780px) {
 	.woocommerce div.product {
 		grid-template-columns: 1fr;
-	}
-
-	.woocommerce div.product table.variations tr {
-		flex-direction: column;
-		align-items: flex-start;
 	}
 }
 
