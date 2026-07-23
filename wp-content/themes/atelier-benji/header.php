@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php endif; ?>
 		</a>
 
-		<nav class="site-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'atelier-benji' ); ?>">
+		<nav class="site-nav" id="site-nav" aria-label="<?php esc_attr_e( 'Menu principal', 'atelier-benji' ); ?>">
 			<?php
 			wp_nav_menu(
 				array(
@@ -39,13 +39,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 			?>
 		</nav>
 
-		<?php if ( class_exists( 'WooCommerce' ) ) : ?>
-			<div class="site-cart">
-				<a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="cart-link">
-					<?php esc_html_e( 'Panier', 'atelier-benji' ); ?>
-					(<?php echo esc_html( WC()->cart ? WC()->cart->get_cart_contents_count() : 0 ); ?>)
-				</a>
-			</div>
-		<?php endif; ?>
+		<div class="site-header-actions">
+			<?php if ( class_exists( 'WooCommerce' ) ) : ?>
+				<div class="site-cart">
+					<a href="<?php echo esc_url( wc_get_cart_url() ); ?>" class="cart-link">
+						<?php esc_html_e( 'Panier', 'atelier-benji' ); ?>
+						(<?php echo esc_html( WC()->cart ? WC()->cart->get_cart_contents_count() : 0 ); ?>)
+					</a>
+				</div>
+			<?php endif; ?>
+
+			<button
+				type="button"
+				class="nav-toggle"
+				aria-expanded="false"
+				aria-controls="site-nav"
+				aria-label="<?php esc_attr_e( 'Ouvrir le menu', 'atelier-benji' ); ?>"
+			>
+				<span class="nav-toggle-bar"></span>
+				<span class="nav-toggle-bar"></span>
+				<span class="nav-toggle-bar"></span>
+			</button>
+		</div>
 	</div>
 </header>
