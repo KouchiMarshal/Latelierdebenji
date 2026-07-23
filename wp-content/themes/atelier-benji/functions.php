@@ -41,9 +41,9 @@ function atelier_benji_scripts() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.12.1' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.12.1' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.12.1', true );
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.12.2' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.12.2' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.12.2', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 
@@ -258,8 +258,8 @@ function atelier_benji_noeud_matiere_options() {
 	return array( 'Jute', 'Satin' );
 }
 
-add_action( 'woocommerce_before_add_to_cart_button', 'atelier_benji_wreath_addon_fields', 20 );
-function atelier_benji_wreath_addon_fields() {
+add_action( 'woocommerce_before_add_to_cart_button', 'atelier_benji_wreath_prenom_field', 5 );
+function atelier_benji_wreath_prenom_field() {
 	global $product;
 
 	if ( ! $product || ! in_array( $product->get_id(), atelier_benji_wreath_addon_product_ids(), true ) ) {
@@ -277,6 +277,19 @@ function atelier_benji_wreath_addon_fields() {
 				<?php endforeach; ?>
 			</select>
 		</p>
+	</div>
+	<?php
+}
+
+add_action( 'woocommerce_before_add_to_cart_button', 'atelier_benji_wreath_addon_fields', 20 );
+function atelier_benji_wreath_addon_fields() {
+	global $product;
+
+	if ( ! $product || ! in_array( $product->get_id(), atelier_benji_wreath_addon_product_ids(), true ) ) {
+		return;
+	}
+	?>
+	<div class="atelier-benji-personalization atelier-benji-wreath-addons">
 		<p class="form-field">
 			<label for="atelier_benji_peluche">
 				<?php esc_html_e( 'Peluche', 'atelier-benji' ); ?>
