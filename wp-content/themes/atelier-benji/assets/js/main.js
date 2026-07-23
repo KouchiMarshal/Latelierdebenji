@@ -43,3 +43,22 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		update();
 	} );
 } );
+
+document.addEventListener( 'DOMContentLoaded', function () {
+	var prenomSelect = document.getElementById( 'atelier_benji_prenom_taille' );
+	var textInput = document.getElementById( 'atelier_benji_text' );
+	var textField = textInput ? textInput.closest( '.form-field' ) : null;
+
+	if ( ! prenomSelect || ! textField ) {
+		return;
+	}
+
+	function updateTextVisibility() {
+		var show = '' !== prenomSelect.value;
+		textField.style.display = show ? '' : 'none';
+		textInput.required = show;
+	}
+
+	prenomSelect.addEventListener( 'change', updateTextVisibility );
+	updateTextVisibility();
+} );
