@@ -869,6 +869,67 @@ ul.products li.product .button:hover {
 	margin: 8px 0 0;
 }
 
+.atelier-benji-color-choices {
+	border: none;
+	padding: 0;
+	margin: 0 0 22px;
+}
+
+.atelier-benji-color-choices legend {
+	padding: 0;
+	margin: 0 0 8px;
+	font-weight: 500;
+	font-size: 0.9rem;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+.atelier-benji-color-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.atelier-benji-color-chip {
+	position: relative;
+}
+
+.atelier-benji-color-checkbox {
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	margin: 0;
+	cursor: pointer;
+}
+
+.atelier-benji-color-chip span {
+	display: inline-block;
+	padding: 8px 16px;
+	border: 1px solid var(--color-border);
+	border-radius: 999px;
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-size: 0.9rem;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.atelier-benji-color-checkbox:checked + span {
+	background: var(--color-accent);
+	border-color: var(--color-accent);
+	color: #fff;
+}
+
+.atelier-benji-color-checkbox:disabled:not(:checked) + span {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.atelier-benji-color-checkbox:focus-visible + span {
+	outline: 2px solid var(--color-accent-dark);
+	outline-offset: 2px;
+}
+
 .woocommerce div.product .quantity input.qty {
 	width: 70px;
 	padding: 12px 14px;

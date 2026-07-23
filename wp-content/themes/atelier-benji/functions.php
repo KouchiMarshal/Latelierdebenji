@@ -41,9 +41,9 @@ function atelier_benji_scripts() {
 		array(),
 		null
 	);
-	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.11.0' );
-	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.11.0' );
-	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.11.0', true );
+	wp_enqueue_style( 'atelier-benji-style', get_stylesheet_uri(), array(), '1.12.0' );
+	wp_enqueue_style( 'atelier-benji-main', get_template_directory_uri() . '/assets/css/main.css', array( 'atelier-benji-style', 'atelier-benji-fonts' ), '1.12.0' );
+	wp_enqueue_script( 'atelier-benji-main', get_template_directory_uri() . '/assets/js/main.js', array(), '1.12.0', true );
 }
 add_action( 'wp_enqueue_scripts', 'atelier_benji_scripts' );
 
@@ -192,18 +192,20 @@ function atelier_benji_personalization_fields() {
 			</label>
 			<input type="text" id="atelier_benji_text" name="atelier_benji_text">
 		</p>
-		<p class="form-field">
-			<label for="atelier_benji_color">
-				<?php esc_html_e( 'Couleur souhaitée', 'atelier-benji' ); ?>
+		<fieldset class="atelier-benji-color-choices">
+			<legend>
+				<?php esc_html_e( 'Couleurs souhaitées (jusqu’à 4)', 'atelier-benji' ); ?>
 				<span class="required">*</span>
-			</label>
-			<select id="atelier_benji_color" name="atelier_benji_color" required>
-				<option value=""><?php esc_html_e( 'Choisir…', 'atelier-benji' ); ?></option>
+			</legend>
+			<div class="atelier-benji-color-grid">
 				<?php foreach ( atelier_benji_color_options() as $color ) : ?>
-					<option value="<?php echo esc_attr( $color ); ?>"><?php echo esc_html( $color ); ?></option>
+					<label class="atelier-benji-color-chip">
+						<input type="checkbox" class="atelier-benji-color-checkbox" name="atelier_benji_color[]" value="<?php echo esc_attr( $color ); ?>">
+						<span><?php echo esc_html( $color ); ?></span>
+					</label>
 				<?php endforeach; ?>
-			</select>
-		</p>
+			</div>
+		</fieldset>
 	</div>
 	<?php
 }
@@ -312,6 +314,17 @@ function atelier_benji_wreath_addon_fields() {
 	<?php
 }
 
+/**
+ * Couleurs cochées par le client (max 4), filtrées sur la liste autorisée.
+ */
+function atelier_benji_get_selected_colors() {
+	$selected = isset( $_POST['atelier_benji_color'] ) ? (array) wp_unslash( $_POST['atelier_benji_color'] ) : array();
+	$selected = array_map( 'sanitize_text_field', $selected );
+	$allowed  = atelier_benji_color_options();
+
+	return array_values( array_intersect( $selected, $allowed ) );
+}
+
 add_filter( 'woocommerce_add_to_cart_validation', 'atelier_benji_validate_personalization', 10, 3 );
 function atelier_benji_validate_personalization( $passed, $product_id, $quantity ) {
 	if ( ! in_array( $product_id, atelier_benji_personalizable_product_ids(), true ) ) {
@@ -330,8 +343,13 @@ function atelier_benji_validate_personalization( $passed, $product_id, $quantity
 		$passed = false;
 	}
 
-	if ( empty( $_POST['atelier_benji_color'] ) ) {
-		wc_add_notice( __( 'Merci de choisir une couleur.', 'atelier-benji' ), 'error' );
+	$colors = atelier_benji_get_selected_colors();
+
+	if ( empty( $colors ) ) {
+		wc_add_notice( __( 'Merci de choisir au moins une couleur.', 'atelier-benji' ), 'error' );
+		$passed = false;
+	} elseif ( count( $colors ) > 4 ) {
+		wc_add_notice( __( 'Merci de choisir au maximum 4 couleurs.', 'atelier-benji' ), 'error' );
 		$passed = false;
 	}
 
@@ -351,8 +369,9 @@ function atelier_benji_add_cart_item_data( $cart_item_data, $product_id, $variat
 		if ( ! empty( $_POST['atelier_benji_text'] ) ) {
 			$cart_item_data['atelier_benji_text'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_text'] ) );
 		}
-		if ( ! empty( $_POST['atelier_benji_color'] ) ) {
-			$cart_item_data['atelier_benji_color'] = sanitize_text_field( wp_unslash( $_POST['atelier_benji_color'] ) );
+		$colors = atelier_benji_get_selected_colors();
+		if ( ! empty( $colors ) ) {
+			$cart_item_data['atelier_benji_color'] = implode( ', ', $colors );
 		}
 	}
 

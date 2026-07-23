@@ -20,3 +20,26 @@ document.addEventListener( 'DOMContentLoaded', function () {
 		} );
 	} );
 } );
+
+document.addEventListener( 'DOMContentLoaded', function () {
+	var MAX_COLORS = 4;
+
+	document.querySelectorAll( '.atelier-benji-color-grid' ).forEach( function ( grid ) {
+		var checkboxes = grid.querySelectorAll( '.atelier-benji-color-checkbox' );
+
+		function update() {
+			var checkedCount = grid.querySelectorAll( '.atelier-benji-color-checkbox:checked' ).length;
+			checkboxes.forEach( function ( checkbox ) {
+				if ( ! checkbox.checked ) {
+					checkbox.disabled = checkedCount >= MAX_COLORS;
+				}
+			} );
+		}
+
+		checkboxes.forEach( function ( checkbox ) {
+			checkbox.addEventListener( 'change', update );
+		} );
+
+		update();
+	} );
+} );
