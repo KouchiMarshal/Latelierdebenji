@@ -1,12 +1,12 @@
-name: Diagnostic ponctuel email + CSS
+name: Installer WP Mail SMTP
 on:
   workflow_dispatch:
 
 jobs:
-  diagnose:
+  install:
     runs-on: ubuntu-latest
     steps:
-      - name: Diagnose via SSH
+      - name: Installer et activer le plugin via SSH
         env:
           OVH_HOST: ${{ secrets.OVH_FTP_SERVER }}
           OVH_USER: ${{ secrets.OVH_FTP_USERNAME }}
@@ -21,15 +21,11 @@ jobs:
             WPCLI="php $HOME/wp-cli.phar"
           fi
 
-          echo "=== site url ==="
-          $WPCLI option get siteurl
-          $WPCLI option get home
+          echo "=== Installation de WP Mail SMTP ==="
+          $WPCLI plugin install wp-mail-smtp --activate 2>&1
 
-          echo "=== atelier-benji directory full tree ==="
-          find wp-content/themes/atelier-benji 2>&1
-
-          echo "=== active theme ==="
-          $WPCLI theme list --status=active
+          echo "=== Statut du plugin ==="
+          $WPCLI plugin list --fields=name,status 2>&1 | grep -i smtp
           REMOTE_EOF
 
           sshpass -p "$OVH_PASS" ssh -o StrictHostKeyChecking=no "$OVH_USER@$OVH_HOST" 'bash -s' < /tmp/remote.sh

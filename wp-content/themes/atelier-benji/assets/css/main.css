@@ -1268,7 +1268,6 @@ body.woocommerce-account .col2-set {
 		width: 100% !important;
 	}
 
-	body.woocommerce-account .col2-set,
 	.woocommerce-Addresses {
 		grid-template-columns: 1fr;
 	}
@@ -1277,6 +1276,15 @@ body.woocommerce-account .col2-set {
 	.woocommerce-account .u-column1,
 	.woocommerce-account .u-column2 {
 		padding: 24px;
+	}
+}
+
+/* Les cartes connexion/inscription ne passent en colonne unique que sur un
+   écran vraiment étroit (téléphone) : au-dessus de 600px (ex: fenêtre Mac en
+   mode côte-à-côte), elles restent côte à côte. */
+@media (max-width: 600px) {
+	body.woocommerce-account .col2-set {
+		grid-template-columns: 1fr;
 	}
 }
 
