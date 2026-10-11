@@ -1,0 +1,50 @@
+name: Diagnostiquer la page de connexion-inscription
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer sshpass
+        run: sudo apt-get update -y >/dev/null && sudo apt-get install -y sshpass >/dev/null
+
+      - name: Préparer le script distant
+        run: |
+          mkdir -p /tmp/loginpage
+          cat > /tmp/loginpage/run.sh <<'EOF'
+          #!/bin/sh
+          set -e
+          cd "$HOME/www"
+          if command -v wp >/dev/null 2>&1; then
+            WP="wp"
+          else
+            if [ ! -f "$HOME/wp-cli.phar" ]; then
+              curl -sS -o "$HOME/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+              chmod +x "$HOME/wp-cli.phar"
+            fi
+            WP="php $HOME/wp-cli.phar"
+          fi
+
+          echo "--- Rendu HTML reel de la page de connexion (non connecte) ---"
+          $WP eval '
+            echo do_shortcode( "[woocommerce_my_account]" );
+          ' 2>&1 | head -c 3000
+
+          echo ""
+          echo "--- CSS deploye : regles col2-set / u-column / input-text ---"
+          CSS_PATH=$(find wp-content/themes -path "*atelier-benji/atelier-benji/assets/css/main.css" 2>/dev/null | head -n1)
+          echo "CSS_PATH=$CSS_PATH"
+          grep -n "col2-set\|u-column\|input-text\|input\.input-text" "$CSS_PATH" | head -n 60
+          EOF
+
+      - name: Envoyer le script sur le serveur
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" scp -o StrictHostKeyChecking=no -P 22 \
+            /tmp/loginpage/run.sh \
+            "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}:~/"
+
+      - name: Diagnostiquer
+        run: |
+          sshpass -p "${{ secrets.OVH_FTP_PASSWORD }}" ssh -o StrictHostKeyChecking=no -p 22 "${{ secrets.OVH_FTP_USERNAME }}@${{ secrets.OVH_FTP_SERVER }}" 'chmod +x ~/run.sh && sh ~/run.sh && rm -f ~/run.sh'
