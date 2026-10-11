@@ -1,0 +1,58 @@
+name: Diagnostic ponctuel email + CSS
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Diagnose via SSH
+        env:
+          OVH_HOST: ${{ secrets.OVH_FTP_SERVER }}
+          OVH_USER: ${{ secrets.OVH_FTP_USERNAME }}
+          OVH_PASS: ${{ secrets.OVH_FTP_PASSWORD }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
+
+          cat > /tmp/remote.sh << 'REMOTE_EOF'
+          set -e
+          cd ~/www || cd ~/latelierdebenji.fr || cd ~
+          WP_DIR=$(find ~ -maxdepth 3 -name "wp-config.php" -exec dirname {} \; | head -1)
+          cd "$WP_DIR"
+          echo "=== WP_DIR ==="
+          echo "$WP_DIR"
+
+          WPCLI="wp"
+          if ! command -v wp &> /dev/null; then
+            WPCLI="php $HOME/wp-cli.phar"
+          fi
+
+          echo "=== Live main.css version header (curl) ==="
+          curl -s "https://latelierdebenji.fr/wp-content/themes/atelier-benji/assets/css/main.css" | head -5
+          curl -s "https://latelierdebenji.fr/wp-content/themes/atelier-benji/style.css" | grep -i version
+
+          echo "=== col2-set rule present in LIVE file on disk ==="
+          grep -n "col2-set" wp-content/themes/atelier-benji/assets/css/main.css
+
+          echo "=== Active plugins (looking for cache plugins) ==="
+          $WPCLI plugin list --status=active --fields=name,status
+
+          echo "=== WooCommerce email settings ==="
+          $WPCLI eval 'foreach (WC()->mailer()->get_emails() as $email) { echo $email->id . " | enabled=" . ($email->is_enabled() ? "yes" : "no") . "\n"; }'
+
+          echo "=== WP mail-related options ==="
+          $WPCLI option get admin_email
+          $WPCLI option get woocommerce_email_from_address
+          $WPCLI option get woocommerce_email_from_name
+
+          echo "=== Check for SMTP plugin ==="
+          $WPCLI plugin list --fields=name,status | grep -i -E "smtp|mail" || echo "Aucun plugin SMTP trouve"
+
+          echo "=== Test wp_mail send ==="
+          $WPCLI eval 'var_export( wp_mail( get_option("admin_email"), "Test envoi WordPress", "Ceci est un test." ) );'
+
+          echo "=== Recent PHP error log (mail-related) ==="
+          tail -n 100 ~/logs/*error*.log 2>/dev/null | grep -i mail || echo "Pas de log d'erreur mail trouve ou pas de fichier de log"
+          REMOTE_EOF
+
+          sshpass -p "$OVH_PASS" ssh -o StrictHostKeyChecking=no "$OVH_USER@$OVH_HOST" 'bash -s' < /tmp/remote.sh
