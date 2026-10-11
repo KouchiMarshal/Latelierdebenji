@@ -15,14 +15,21 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq sshpass
 
           cat > /tmp/remote.sh << 'REMOTE_EOF'
-          echo "=== wp-content/themes contents ==="
-          ls -la ~/www/wp-content/themes/ 2>&1
+          cd ~/www
+          WPCLI="wp"
+          if ! command -v wp &> /dev/null; then
+            WPCLI="php $HOME/wp-cli.phar"
+          fi
 
-          echo "=== find main.css anywhere under home ==="
-          find ~ -iname "main.css" 2>/dev/null
+          echo "=== site url ==="
+          $WPCLI option get siteurl
+          $WPCLI option get home
 
-          echo "=== find style.css for atelier theme ==="
-          find ~ -path "*atelier*" -iname "style.css" 2>/dev/null
+          echo "=== atelier-benji directory full tree ==="
+          find wp-content/themes/atelier-benji 2>&1
+
+          echo "=== active theme ==="
+          $WPCLI theme list --status=active
           REMOTE_EOF
 
           sshpass -p "$OVH_PASS" ssh -o StrictHostKeyChecking=no "$OVH_USER@$OVH_HOST" 'bash -s' < /tmp/remote.sh
